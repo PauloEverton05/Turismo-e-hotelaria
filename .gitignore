@@ -177,6 +177,11 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 
+### Dados do projeto ###
+# Dados brutos e processados não são versionados (arquivos grandes)
+data/raw/
+data/processed/
+
 ### Ferramentas do projeto ###
 # uv
 #   O uv.lock DEVE ser versionado para garantir a reprodutibilidade do ambiente.
