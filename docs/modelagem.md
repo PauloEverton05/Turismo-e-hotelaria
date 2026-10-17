@@ -4,102 +4,117 @@ Esta página descreve **o desenho do experimento de modelagem**: qual problema o
 resolve, sobre que unidade de análise ele opera, quais variáveis entram, qual técnica foi
 escolhida e como o resultado é avaliado.
 
-!!! tip "Como preencher esta página"
-    Nem todo objetivo exige modelo — objetivos descritivos são resolvidos na
-    [análise exploratória](analise-exploratoria.md). Declare logo no início **quais**
-    objetivos exigem modelagem e por quê.
-
-    Regras práticas:
-
-    - a **unidade de análise** vem da pergunta de negócio, não do formato da tabela; se a
-      pergunta é sobre o cliente, um registro por transação faria os clientes recorrentes
-      dominarem o resultado;
-    - amarre cada variável ao **critério de aceite** que a pediu, e marque as que você
-      acrescentou por conta própria;
-    - justifique a **técnica** pelo tipo de dado (categórico, contínuo, misto, textual,
-      temporal) — não pela familiaridade com a biblioteca;
-    - toda métrica de avaliação vem com a **direção de leitura** (maior é melhor / menor é
-      melhor) e com a ressalva de quando ela engana;
-    - liste as **saídas** com caminho: modelo serializado, tabelas de resultado e figuras.
+> **Nota de divisão de trabalho (16/10/2026):** a clusterização em si
+> (`04-0-modelagem-cluster.ipynb` e `04-1-modelagem-cotovelo.ipynb`, que decidem o número de
+> grupos e treinam os algoritmos) está sendo feita por outro integrante da equipe. Esta
+> página documenta as duas peças complementares já prontas: **redução de dimensionalidade**
+> (`04-2`) e **regras de associação** (`04-3`). Nenhuma das duas forma grupos — elas apoiam a
+> leitura dos grupos que o `04-0` vai produzir.
 
 ## Problema
 
-<span style="color:red">**Enuncie o problema em uma frase, no vocabulário do negócio, e
-indique a que objetivo dos [critérios de sucesso](criterios-sucesso.md) ele corresponde.**</span>
+Que atributos de uma reserva de hotel realmente carregam estrutura (para a clusterização
+usar como mapa de interpretação) e que combinações de características se associam a
+cancelamento (pergunta 3 do PBL: *padrões de coocorrência que sustentam ou contradizem a
+segmentação*). Corresponde às metas de mineração descritas no Canvas do Problema
+([index.md](index.md)) sobre *agrupamento* e *associação*.
 
-<span style="color:red">**Aponte o notebook e o módulo onde a modelagem está
-implementada.**</span>
+Notebooks: `notebooks/04-2-modelagem-reducao.ipynb` (PCA + UMAP) e
+`notebooks/04-3-modelagem-associacao.ipynb` (Apriori/Eclat/FP-Growth).
 
 ## Unidade de análise
 
-Um registro por **&lt;unidade de análise&gt;** (`arquivo_de_entrada`).
+Um registro por **reserva** (`hotel_bookings_tratado.csv`, 119.390 linhas, saída do
+`02-ajustes-dados`).
 
-<span style="color:red">**Justifique a escolha: por que esta unidade e não outra, e o que
-daria errado com a alternativa.**</span>
+Não há chave única de reserva na base original — duas reservas idênticas em todos os campos
+geram duas linhas iguais. A unidade "reserva" é mantida (não "hóspede" nem "estadia") porque
+é o grão das perguntas de negócio: overbooking, canal e antecedência se decidem por reserva,
+não por pessoa.
 
 ## Variáveis
 
-| Critério pede | Variável usada | Observação |
+As 98 colunas da matriz pré-processada (`03-preparacao`): 21 numéricas/binárias escalonadas
+(0–1) e 10 variáveis nominais em One-Hot. `is_canceled` **não** é uma delas — é o rótulo
+reservado para avaliação, descrito em [preparacao.md](preparacao.md).
+
+| Pergunta do PBL pede | Variável usada | Observação |
 |:---|:---|:---|
-| &lt;dimensão pedida no critério&gt; | `nome_da_coluna` | &lt;o que ela representa&gt; |
-| &lt;dimensão pedida no critério&gt; | `nome_da_coluna` | &lt;o que ela representa&gt; |
-| — | `nome_da_coluna` | &lt;variável acrescentada e o que ela captura&gt; |
+| Relevância para a estrutura das reservas | todas as 98 colunas pré-processadas | entrada de PCA e UMAP |
+| Padrões de coocorrência | as mesmas 98 colunas, recortadas em itens | entrada das regras de associação |
+| — | `is_canceled` (volta só no `04-3`) | não é atributo de entrada; só consequente de regra |
 
-<span style="color:red">**Descreva as variáveis derivadas, se houver, e o que elas separam
-que as variáveis originais não separavam.**</span>
+### Pré-processamento específico destes dois notebooks
 
-### Pré-processamento
-
-<span style="color:red">**Registre cada transformação e o motivo.**</span>
-
-??? note "Transformações que costumam entrar aqui"
-    - agrupamento de categorias raras em `Outros`, para que o modelo não gaste capacidade
-      descrevendo ruído;
-    - decisão sobre ausência: virar categoria própria, ser imputada ou excluir a linha;
-    - transformação de escala em contagens com cauda longa (`log1p`, padronização);
-    - codificação de categóricas, coerente com a técnica escolhida;
-    - balanceamento, quando a classe de interesse é rara.
+- **Redução (`04-2`):** nenhum pré-processamento adicional — usa a matriz do `03` como está.
+  Cada coluna One-Hot (ex. `country_PRT`) é somada de volta à sua variável de origem
+  (`country`) para o ranking de relevância, com uma função que casa pelo nome da coluna.
+- **Associação (`04-3`):** colunas binárias (One-Hot e *flags*) viram item quando valem 1
+  (`hotel=City Hotel`). Colunas numéricas são cortadas em **tercis** (`lead_time=baixo`,
+  `=medio`, `=alto`). Itens presentes em mais de 90% das reservas são descartados — não
+  discriminam nada (`SUPORTE_MAXIMO = 0,90`).
 
 ## Técnica
 
-<span style="color:red">**Explique por que esta técnica se aplica ao tipo de dado do
-problema.**</span>
-
 ```mermaid
 flowchart LR
-    A["entrada<br/>variáveis"] --> B["etapa 1<br/>transformação"]
-    B --> C["etapa 2<br/>modelo"]
-    C --> D["etapa 3<br/>caracterização do resultado"]
+    A["03-preparacao<br/>98 colunas (0-1 + one-hot)"] --> B["04-2 · PCA<br/>31 componentes (90% var.)"]
+    A --> C["04-2 · UMAP<br/>5 componentes"]
+    A --> D["04-3 · itens<br/>binário ou tercil"]
+    D --> E["Apriori / Eclat / FP-Growth<br/>conjuntos frequentes"]
+    E --> F["Regras A → B<br/>suporte, confiança, lift"]
+    B --> G["ranking de relevância<br/>por variável de origem"]
+    C --> G
 ```
 
-<span style="color:red">**Detalhe cada etapa do pipeline e onde ela é ajustada — em amostra
-ou na base completa.**</span>
+**PCA** porque é a redução linear padrão e dá **cargas** interpretáveis (quanto cada coluna
+pesa em cada componente, com sinal). **UMAP** porque captura estrutura não linear que o PCA
+não vê; como não tem cargas, a relevância de cada coluna é lida por um **modelo substituto**
+(random forest que aprende a prever as coordenadas do UMAP a partir das colunas — a
+importância de cada coluna nesse modelo vira a relevância).
+
+**Apriori, Eclat e FP-Growth** rodam os três sobre a mesma base de transações, e o notebook
+confere que os três encontram exatamente os mesmos conjuntos frequentes — a escolha entre
+eles é só de desempenho, não de resultado.
 
 ## Avaliação do modelo
 
 | Métrica | Leitura |
 |:---|:---|
-| &lt;métrica&gt; | &lt;maior ou menor é melhor, e o que ela mede&gt; |
-| &lt;métrica&gt; | &lt;maior ou menor é melhor, e o que ela mede&gt; |
+| Variância acumulada do PCA | maior é melhor; o notebook para no menor nº de componentes que soma 90% |
+| R² fora da amostra (OOB) do substituto do UMAP | maior é melhor; mede se a importância por coluna é confiável — aqui, **0,963** |
+| Suporte, confiança, lift das regras | suporte e confiança: fração de reservas; lift > 1 é associação positiva, < 1 negativa, = 1 é independência |
 
-<span style="color:red">**Descreva o desenho do experimento: divisão treino/teste, validação
-cruzada, faixa de hiperparâmetros testada e critério de escolha do modelo final.**</span>
+Parâmetros fixados neste experimento (`04-3`): suporte mínimo 15%, confiança mínima 60%,
+lift mínimo 1,2, conjuntos de até 3 itens.
 
 !!! warning "Ressalva de métrica"
-    Use um bloco como este para registrar quando uma métrica engana no seu contexto — por
-    exemplo, acurácia com classes desbalanceadas, ou índices de separação em espaços
-    derivados de variáveis categóricas. Diga qual é o critério de desempate.
+    Lift alto com suporte baixo descreve poucas reservas — é nicho, não padrão de negócio.
+    Um item com suporte abaixo do corte mínimo (ex. `deposit_type=Non Refund`, com 12,2% das
+    reservas) **nunca aparece em nenhuma regra**, mesmo sendo um padrão forte e documentado
+    na literatura da base (99,4% de cancelamento nesse grupo) — o corte de suporte filtra
+    também sinais reais, não só ruído.
 
 ## Interpretação do resultado
 
-<span style="color:red">**Explique como o resultado é traduzido para o negócio: importância
-de variáveis, caracterização de grupos, regras extraídas. Se houver nomeação automática de
-grupos ou classes, descreva o critério.**</span>
+**Redução (`04-2`):** no top 15 de relevância, 13 das 15 variáveis coincidem entre PCA e
+UMAP — `hotel`, `deposit_type`, `market_segment`, `country`, `meal`, `customer_type`,
+`distribution_channel`, `reserved_room_type`/`assigned_room_type` e o bloco de datas de
+chegada (`arrival_date_year/month/week_number/day_of_month`). São as candidatas mais firmes
+a separar perfis de reserva, e o colega pode usá-las para checar se os clusters do `04-0`
+realmente se apoiam nessas variáveis.
+
+**Associação (`04-3`):** 11.226 regras geradas, 523 fortes (confiança ≥ 60%, lift ≥ 1,2).
+Entre as que terminam em `is_canceled`, destacam-se combinações de `country=PRT` com tipo de
+quarto ou canal (lift ~1,8 para cancelamento) e de `lead_time=baixo` com outras variáveis de
+baixa antecedência (lift ~1,3 para **não** cancelamento) — reservas de última hora cancelam
+menos, o que faz sentido: sobra pouco tempo para desistir.
 
 ## Saídas
 
 | Arquivo | Conteúdo |
 |:---|:---|
-| `data/processed/nome.parquet` | &lt;o que contém&gt; |
-| `models/nome.joblib` | &lt;modelo serializado, para que serve&gt; |
-| `reports/figures/nome/*.png` | &lt;quais figuras&gt; |
+| `data/processed/hotel_bookings_pca.csv` | 119.390 reservas × 31 componentes principais |
+| `data/processed/hotel_bookings_umap.csv` | 119.390 reservas × 5 componentes UMAP |
+| `data/processed/regras_associacao.csv` | 523 regras fortes (antecedente, consequente, suporte, confiança, lift) |
+| `docs/imagens/` (gerado ao rodar os notebooks) | gráficos de variância acumulada, cargas, importância e suporte×confiança |
