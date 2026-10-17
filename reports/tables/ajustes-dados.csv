@@ -1,0 +1,14 @@
+coluna;regra;quantidade_afetada
+children;Ausente convertido para 0 crianças;4
+agent;Ausente convertido para categoria: Sem agência;16340
+company;Ausente convertido para categoria: Sem empresa;112593
+country;Ausente convertido para categoria: País não informado;488
+reservation_status_date;"Conversão de texto para data; valores inválidos viram nulos";0
+arrival_date;Data de chegada recomposta de ano, mês e dia;119390
+total_nights;Soma de noites de fim de semana e durante a semana;119390
+total_guests;Soma de adultos, crianças e bebês;119390
+room_changed;Quarto atribuído diferente do quarto reservado;14917
+has_special_requests;Reserva com pelo menos uma solicitação especial;49072
+linhas;Duplicatas exatas preservadas por não haver chave de reserva;31994
+reservation_status;"Mantido como desfecho posterior; excluir de modelos de previsão";0
+reservation_status_date;"Mantido como informação posterior; excluir de modelos de previsão";0
