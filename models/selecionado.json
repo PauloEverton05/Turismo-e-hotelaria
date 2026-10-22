@@ -1,0 +1,7 @@
+{
+  "modelo": "k-means",
+  "params": "{'init': 'k-means++', 'n_clusters': 5}",
+  "grupos": 5,
+  "silhueta": 0.12573472576389003,
+  "arquivo": "model_hotel_k_means.joblib"
+}
