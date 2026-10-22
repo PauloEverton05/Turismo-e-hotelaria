@@ -12,24 +12,24 @@
     - [ ] Produzir relatório mineração dos dados
 
 ???+ abstract "Fase 3: Entendimento dos dados"
-    - [x] Gerar conjunto de dados — `00-dicionario-dados.ipynb`
+    - [x] Gerar conjunto de dados: `00-dicionario-dados.ipynb`
     - [ ] Produzir relatório qualidade dos dados
-    - [x] Realizar descrição dos dados — `data/processed/dicionario.csv`
-    - [x] Realizar análise exploratória — `01-analise-exploratoria.ipynb`
+    - [x] Realizar descrição dos dados: `data/processed/dicionario.csv`
+    - [x] Realizar análise exploratória: `01-analise-exploratoria.ipynb`
     - [ ] Produzir relatório do entendimento dos dados
 
 ???+ abstract "Fase 4: Preparação dos dados"
-    - [x] Gerar script de limpeza dos dados — `02-ajustes-dados.ipynb`
-    - [x] Gerar conjunto de dados processado — `03-preparacao.ipynb`
+    - [x] Gerar script de limpeza dos dados: `02-ajustes-dados.ipynb`
+    - [x] Gerar conjunto de dados processado: `03-preparacao.ipynb`
       (`hotel_bookings_preprocessed.csv`)
     - [ ] Produzir relatório preparação dos dados
 
 ???+ abstract "Fase 5: Modelagem"
-    - [x] Gerar desenho do experimento da modelagem — ver [modelagem.md](modelagem.md)
-    - [ ] Gerar script da modelagem (clusterização) — `04-0-modelagem-cluster.ipynb` e
+    - [x] Gerar desenho do experimento da modelagem: ver [modelagem.md](modelagem.md)
+    - [ ] Gerar script da modelagem (clusterização): `04-0-modelagem-cluster.ipynb` e
       `04-1-modelagem-cotovelo.ipynb` em andamento com outro integrante da equipe
-    - [x] Redução de dimensionalidade (PCA + UMAP) — `04-2-modelagem-reducao.ipynb`
-    - [x] Regras de associação (Apriori/Eclat/FP-Growth) —
+    - [x] Redução de dimensionalidade (PCA + UMAP): `04-2-modelagem-reducao.ipynb`
+    - [x] Regras de associação (Apriori/Eclat/FP-Growth):
       `04-3-modelagem-associacao.ipynb`
     - [ ] Produzir relatório com os resultados
 
