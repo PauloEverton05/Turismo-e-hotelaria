@@ -1,0 +1,82 @@
+{
+  "modelo": {
+    "modelo": "k-means",
+    "params": "{'init': 'k-means++', 'n_clusters': 5}",
+    "grupos": 5,
+    "silhueta": 0.12573472576389003,
+    "arquivo": "model_hotel_k_means.joblib"
+  },
+  "criterios": [
+    {
+      "critério": "Segmentos operáveis",
+      "meta": "2 a 5",
+      "obtido": "5",
+      "atende": true,
+      "crítico": true
+    },
+    {
+      "critério": "Menor segmento",
+      "meta": ">= 10% da carteira",
+      "obtido": "12.1%",
+      "atende": true,
+      "crítico": true
+    },
+    {
+      "critério": "Cancelamento distingue os segmentos",
+      "meta": "razão >= 1.3 e p < 0,05",
+      "obtido": "6.62 (p = 0.0e+00)",
+      "atende": true,
+      "crítico": true
+    },
+    {
+      "critério": "Reserva nova classificável",
+      "meta": ">= 85%",
+      "obtido": "99.7%",
+      "atende": true,
+      "crítico": true
+    },
+    {
+      "critério": "Separação dos grupos",
+      "meta": "silhueta >= 0.25",
+      "obtido": "0.124",
+      "atende": false,
+      "crítico": false
+    },
+    {
+      "critério": "Cobertura da carteira",
+      "meta": "100% com segmento",
+      "obtido": "100.0%",
+      "atende": true,
+      "crítico": false
+    }
+  ],
+  "cenarios_financeiros": [
+    {
+      "cenario": "pessimista",
+      "ganho": 0.01,
+      "receita_extra": 86654.2,
+      "resultado_ano1": -18345.8,
+      "roi_ano1": -0.17,
+      "payback_meses": 15.57
+    },
+    {
+      "cenario": "base",
+      "ganho": 0.03,
+      "receita_extra": 259962.6,
+      "resultado_ano1": 154962.6,
+      "roi_ano1": 1.48,
+      "payback_meses": 4.09
+    },
+    {
+      "cenario": "otimista",
+      "ganho": 0.05,
+      "receita_extra": 433271.01,
+      "resultado_ano1": 328271.01,
+      "roi_ano1": 3.13,
+      "payback_meses": 2.35
+    }
+  ],
+  "aprovado": true,
+  "proxima_acao": "Implantação",
+  "justificativa": "5 de 6 critérios atendidos; críticos com falha: nenhum; resultado do ano 1 no cenário base: $154,963."
+}
