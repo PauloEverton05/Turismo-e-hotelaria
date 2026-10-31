@@ -163,9 +163,26 @@ da pessoa.
   adaptação dos notebooks de dicionário/EDA ao domínio de hotelaria, decisão
   do número de grupos e treino da clusterização (K-Means, k=5), e notebook
   bônus de modelagem.
-- **O que aprendi de novo:** `TODO, preencher em primeira pessoa`
-- **O que faria diferente:** `TODO, preencher em primeira pessoa`
-- **Nota de autoavaliação (0-10) e justificativa:** `TODO, preencher em primeira pessoa`
+- **O que aprendi de novo:** aprendi a tratar a limpeza como decisão
+  documentada, e não como correção silenciosa. No `02-ajustes-dados` cada
+  ajuste (ausência de `children` virando 0, agência, empresa e país ausentes
+  virando categorias explícitas, duplicatas exatas preservadas por falta de
+  chave) registra o motivo e a quantidade afetada numa tabela de auditoria.
+  Aprendi também a separar variável de desfecho de variável de entrada:
+  `reservation_status` e sua data ficam fora dos modelos, e `is_canceled` só
+  entra na avaliação dos segmentos. Na modelagem, aprendi que escolher k
+  não é só olhar a silhueta: no bônus, k=2 ganhou de k=5 por 0,0007 na
+  amostra e perdeu na base completa (0,100 contra 0,1257), e a regra de
+  negócio do Canvas (no máximo cinco ações, uma por grupo) pesou mais que
+  uma diferença dentro do ruído.
+- **O que faria diferente:** eu teria definido a regra de escolha de k (faixa
+  de grupos, ruído máximo, teto de 90% no maior grupo) em um só lugar desde o
+  início, em vez de repeti-la em cada notebook de modelagem. Hoje o `04-0`
+  aceita de 2 a 8 grupos e o `04-1` de 2 a 5, o que mostra o risco de manter
+  o mesmo critério em vários arquivos.
+- **Nota de autoavaliação (0-10) e justificativa:** 8/10. Entreguei a limpeza
+  e a modelagem de agrupamento de forma documentada e reproduzível; não dou
+  mais porque os critérios de escolha ficaram duplicados entre os notebooks.
 
 !!! warning "Pendência"
     A divisão de trabalho acima é rastreável e verificável (commits reais,
