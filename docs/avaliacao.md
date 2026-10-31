@@ -107,8 +107,8 @@ Luan Victor Gurgel Quintela (`Luan Victor`)
 | `7b9d9a2` | 21/10 | Paulo Everton | `05-avaliacao`, `06-implantacao` | Confronto com critérios de aceite, cenários financeiros, classificador de segmento para reservas novas |
 | `0ea3d53` | 23/10 | Paulo Everton | `05-avaliacao`, `06-implantacao` | Polimento: resumo executivo, limpeza de variáveis |
 | `49c1f83` | 30/10 | Luan Victor | `07_modelagem_bonus` | Notebook bônus de modelagem (1.787 linhas adicionadas) |
-| `(commit atual)` | 30/10 | Paulo Everton | `docs/relatorio-final.md` (novo) | Redação do relatório final consolidado |
-| `(commit atual)` | 30/10 | Paulo Everton | `docs/avaliacao.md`, `docs/modelagem.md`, `docs/entendimento-negocio.md`, `docs/entendimento-dados.md`, `docs/fonte-dados.md`, `docs/criterios-sucesso.md`, `docs/analise-exploratoria.md`, `docs/implementacao.md`, `docs/preparacao.md`, `docs/status.md`, `README.md`, `mkdocs.yml` | Revisão e atualização de toda a documentação do site |
+| `87893a0` | 30/10 | Paulo Everton | `docs/relatorio-final.md` (novo) | Redação do relatório final consolidado |
+| `87893a0` | 30/10 | Paulo Everton | `docs/avaliacao.md`, `docs/modelagem.md`, `docs/entendimento-negocio.md`, `docs/entendimento-dados.md`, `docs/fonte-dados.md`, `docs/criterios-sucesso.md`, `docs/analise-exploratoria.md`, `docs/implementacao.md`, `docs/preparacao.md`, `docs/status.md`, `README.md`, `mkdocs.yml` | Revisão e atualização de toda a documentação do site |
 
 ### Síntese de contribuição por pessoa
 
