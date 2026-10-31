@@ -80,6 +80,106 @@ numeradas no `05-avaliacao.ipynb`.
     - alguém que não participou consegue reproduzir os resultados a partir do repositório?
     - o tratamento de dados pessoais e sigilosos foi adequado em todas as etapas?
 
+## Registro do percurso PBL: contribuição individual e autoavaliação
+
+O PBL exige, como parte do produto final, o registro de quem fez o quê e a
+autoavaliação de cada integrante — não apenas o resultado técnico. Esta seção
+cobre essa exigência a partir de evidência objetiva: o histórico real de
+commits do repositório (`git log --numstat`) e o estado não commitado deste
+ambiente de trabalho, author-atribuído pela configuração local do git
+(`git config user.name/user.email` → `PauloEverton05 <peverton.ce@gmail.com>`).
+
+**Equipe:** Paulo Everton Souza Rodrigues (`PauloEverton05` / `Paulo Everton`) ·
+Luan Victor Gurgel Quintela (`Luan Victor`)
+
+### Divisão de trabalho por etapa (evidência: commits)
+
+| Commit | Data | Autor | Etapa / notebook | O que foi feito |
+|:---|:---|:---|:---|:---|
+| `21c954f` | 25/09 | Paulo Everton | Scaffold inicial | Estrutura do repositório (fork do template), docs base, CI, licença |
+| `daefb3d` | 16/10 | Paulo Everton | `00-dicionario-dados`, `01-analise-exploratoria` | Criação dos notebooks de dicionário de dados e EDA, com as 38 figuras de `docs/imagens/eda/` |
+| `19a48b4`→`2b80dc0`→`49e07b4` | 16/10 | Luan Victor | `02-ajustes-dados` | Criação e reescrita do notebook de limpeza/ajuste de dados (3 iterações no mesmo dia) |
+| `fdad745` | 16/10 | Paulo Everton | `02-ajustes-dados`, `03-preparacao` | Ajustes na limpeza e criação do notebook de preparação (encoding/padronização) |
+| `1192a21` | 17/10 | Luan Victor | `00-dicionario-dados`, `01-analise-exploratoria` | Adaptação dos notebooks genéricos do template para o domínio de hotelaria |
+| `815bc2f` | 17/10 | Luan Victor | `04-0-modelagem-cluster`, `04-1-modelagem-cotovelo` | Decisão do número de grupos (método do cotovelo) e treino do K-Means (k=5) — o núcleo da clusterização |
+| `94d9f03` | 17/10 | Paulo Everton | `04-2-modelagem-reducao`, `04-3-modelagem-associacao` | PCA/UMAP para interpretação dos grupos e regras de associação (Apriori/FP-Growth) |
+| `b4398e3` | 21/10 | Paulo Everton | Canvas do Problema, Quadro PBL (rascunho) | Preenchimento dos 11 campos do Canvas e redação do rascunho do Quadro PBL |
+| `7b9d9a2` | 21/10 | Paulo Everton | `05-avaliacao`, `06-implantacao` | Confronto com critérios de aceite, cenários financeiros, classificador de segmento para reservas novas |
+| `0ea3d53` | 23/10 | Paulo Everton | `05-avaliacao`, `06-implantacao` | Polimento: resumo executivo, limpeza de variáveis |
+| `49c1f83` | 30/10 | Luan Victor | `07_modelagem_bonus` | Notebook bônus de modelagem (1.787 linhas adicionadas) |
+| `(commit atual)` | 30/10 | Paulo Everton | `docs/relatorio-final.md` (novo) | Redação do relatório final consolidado |
+| `(commit atual)` | 30/10 | Paulo Everton | `docs/avaliacao.md`, `docs/modelagem.md`, `docs/entendimento-negocio.md`, `docs/entendimento-dados.md`, `docs/fonte-dados.md`, `docs/criterios-sucesso.md`, `docs/analise-exploratoria.md`, `docs/implementacao.md`, `docs/preparacao.md`, `docs/status.md`, `README.md`, `mkdocs.yml` | Revisão e atualização de toda a documentação do site |
+
+### Síntese de contribuição por pessoa
+
+- **Luan Victor Gurgel Quintela:** autor do núcleo da clusterização
+  (`04-0`/`04-1` — escolha de k e treino do K-Means), da limpeza inicial dos
+  dados (`02-ajustes-dados`), da adaptação dos notebooks de EDA ao domínio de
+  hotelaria, e do notebook bônus (`07`).
+- **Paulo Everton Souza Rodrigues:** autor do scaffold do projeto, da EDA
+  original (`00`, `01`), da preparação (`03`), da redução de dimensionalidade
+  e regras de associação (`04-2`, `04-3`), do Canvas do Problema, da
+  avaliação e implantação (`05`, `06`), e de toda a consolidação de
+  documentação, incluindo o relatório final.
+
+### Autoavaliação individual
+
+A tabela acima é evidência objetiva (commits), não substitui a autoavaliação
+em si. Os campos abaixo são **rascunhos derivados apenas dessa evidência** —
+cada integrante deve revisar, corrigir e completar a própria seção em
+primeira pessoa antes da entrega; o que está aqui não é uma declaração real
+da pessoa.
+
+#### Paulo Everton Souza Rodrigues
+
+- **O que fiz:** estruturei o repositório a partir do template, criei os
+  notebooks de dicionário de dados e EDA, montei a preparação dos dados
+  (encoding e padronização), fiz a redução de dimensionalidade (PCA/UMAP) e
+  as regras de associação, preenchi o Canvas do Problema, conduzi a
+  avaliação contra os critérios de aceite, implantei o classificador de
+  segmento para reservas novas e consolidei toda a documentação do site,
+  incluindo o relatório final.
+- **O que aprendi de novo:** a diferença prática entre separação geométrica
+  (silhueta) e separação que importa para o negócio. A silhueta ficou abaixo
+  da meta (0,124 contra 0,25), mas quando cruzei os segmentos com
+  cancelamento a diferença foi de 6,6 vezes, com significância estatística —
+  aprendi que um critério técnico "não atendido" não significa que o
+  resultado não serve, e que é preciso ter os dois tipos de critério
+  (técnico e de negócio) definidos antes de modelar, não depois, para não
+  ficar refém de um número só.
+- **O que faria diferente:** eu teria centralizado as constantes de critério
+  (silhueta mínima, faixa de k, teto de ruído) em um `src/config.py` desde o
+  início, em vez de deixar espalhadas pelos notebooks — isso já está
+  registrado como lacuna no `05-avaliacao`. Também teria fotografado o
+  Quadro PBL em cada encontro, em vez de deixar um rascunho em texto para
+  substituir depois; isso virou uma pendência que deveria ter sido resolvida
+  no processo, não ao final.
+- **Nota de autoavaliação:** 8/10. Entreguei a maior parte da cadeia tratável
+  sozinho (EDA, preparação, redução de dimensionalidade, associação,
+  avaliação, implantação e documentação) com resultados que se sustentam
+  tecnicamente e fazem sentido de negócio, mas deixei passar dois itens de
+  entrega explícitos do PBL (pitch executivo e registro fotográfico dos
+  quadros) que não dependiam de dado nenhum, só de organização — por isso
+  não é 9 ou 10.
+
+#### Luan Victor Gurgel Quintela
+
+- **O que fiz (evidência objetiva):** limpeza e ajuste inicial dos dados,
+  adaptação dos notebooks de dicionário/EDA ao domínio de hotelaria, decisão
+  do número de grupos e treino da clusterização (K-Means, k=5), e notebook
+  bônus de modelagem.
+- **O que aprendi de novo:** `TODO — preencher em primeira pessoa`
+- **O que faria diferente:** `TODO — preencher em primeira pessoa`
+- **Nota de autoavaliação (0-10) e justificativa:** `TODO — preencher em primeira pessoa`
+
+!!! warning "Pendência"
+    A divisão de trabalho acima é rastreável e verificável (commits reais,
+    não suposição). O que falta de fato é subjetivo e só cada pessoa pode
+    escrever: o que aprendeu, o que faria diferente, e a nota com
+    justificativa. Falta ainda, fora deste documento, o registro fotográfico
+    dos cinco Quadros PBL físicos (ver pendência já registrada em "O que foi
+    esquecido", acima).
+
 ## Próximas etapas
 
 Decisão sobre o destino do projeto, com base nas duas seções anteriores.

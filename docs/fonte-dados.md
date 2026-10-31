@@ -3,106 +3,115 @@
 Esta página descreve **de onde vêm os dados** do projeto: a origem, como ela está
 organizada, qual é o grão de cada registro e como a carga é reproduzida.
 
-!!! tip "Como preencher esta página"
-    Substitua os textos em destaque pelos do seu projeto. Preencha antes de começar a
-    análise — quem chega depois no repositório lê esta página primeiro.
-
-    Regras práticas:
-
-    - descreva a origem de forma que **outra pessoa consiga acessá-la** (sistema, caminho,
-      credencial necessária), sem expor segredos ou caminhos com dados pessoais;
-    - registre o **grão** em uma frase: "cada linha é um(a) …";
-    - anote **volumetria e período**, que são o que dimensiona todo o resto do projeto;
-    - liste as **métricas aditivas** separadamente das dimensões — são elas que podem ser
-      somadas com segurança;
-    - deixe a seção de reprodução com os comandos reais, testados.
-
 ## Origem
 
-<span style="color:red">**Descreva o sistema de origem, a área responsável e em que formato
-os dados são publicados.**</span>
+A base é a *Hotel Booking Demand*, publicada por Nuno Antonio, Ana de Almeida e Luis
+Nunes (2019) no periódico *Data in Brief*, e distribuída no Kaggle pela usuária
+jessemostipak. Reúne reservas de dois hotéis portugueses, um resort e um hotel urbano,
+feitas entre julho de 2015 e agosto de 2017.
+
+O download é direto, sem cadastro, a partir do Kaggle:
 
 ```
-CAMINHO_DA_ORIGEM  (caminho de rede, URI do bucket ou string de conexão)
+https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand
 ```
 
-O caminho pode ser sobrescrito pela variável de ambiente `NOME_DA_VARIAVEL`.
+!!! quote "Citação obrigatória"
+    Antonio, N., de Almeida, A., & Nunes, L. (2019). *Hotel booking demand datasets.*
+    **Data in Brief**, 22, 41-49.
 
-!!! warning "Dados sensíveis"
-    Não versione caminhos que contenham nome de usuário, token ou host interno
-    identificável. Prefira um placeholder aqui e o valor real em um `.env` fora do git.
+!!! warning "Licença e uso"
+    A base é distribuída sob licença **CC BY 4.0**: uso livre, inclusive comercial,
+    desde que a autoria seja citada. Não há dado pessoal identificável: não existe
+    nome, documento ou contato do hóspede em nenhuma coluna; `agent` e `company` são
+    identificadores internos da operação, não da pessoa hospedada.
 
 ### Extração vigente
 
-<span style="color:red">**Identifique a extração em uso (nome, data) e o que mudou em
-relação à anterior. Se colunas foram acrescentadas ou removidas, liste-as.**</span>
+Extração única, correspondente ao arquivo publicado com o artigo. A base é lida em
+`00-dicionario-dados.ipynb` a partir de `data/raw/hotel_bookings.csv`, com os valores
+textuais `NULL` da origem convertidos em ausência (`NaN`) durante a leitura.
 
-| Coluna | Conteúdo |
+### As 32 colunas originais, por dimensão de negócio
+
+| Dimensão | Exemplos de colunas na origem |
 |:---|:---|
-| `nome_da_coluna` | &lt;o que ela representa&gt; |
-| `nome_da_coluna` | &lt;o que ela representa&gt; |
+| Identificação do hotel | `hotel` |
+| Desfecho (rótulo reservado) | `is_canceled`, `reservation_status`, `reservation_status_date` |
+| Antecedência e calendário | `lead_time`, `arrival_date_year`, `arrival_date_month`, `arrival_date_week_number`, `arrival_date_day_of_month` |
+| Estadia | `stays_in_weekend_nights`, `stays_in_week_nights` |
+| Hóspedes | `adults`, `children`, `babies` |
+| Canal e origem | `meal`, `country`, `market_segment`, `distribution_channel`, `agent`, `company` |
+| Histórico do hóspede | `is_repeated_guest`, `previous_cancellations`, `previous_bookings_not_canceled` |
+| Quarto e tarifa | `reserved_room_type`, `assigned_room_type`, `booking_changes`, `deposit_type`, `adr` |
+| Operação da reserva | `days_in_waiting_list`, `customer_type`, `required_car_parking_spaces`, `total_of_special_requests` |
+
+O dicionário completo, coluna a coluna, com o tipo semântico atribuído a cada uma, é
+gerado em `00-dicionario-dados.ipynb` e salvo em `data/processed/dicionario.csv`.
 
 ## Organização da origem
 
-<span style="color:red">**Explique o esquema de particionamento ou a estrutura de
-diretórios/tabelas da origem.**</span>
+Arquivo único, tabulado (CSV), sem particionamento.
 
 ```
-raiz_da_origem/
-├── particao_1=valor/
-│   ├── particao_2=valor/arquivo.parquet
-│   └── ...
-└── particao_1=valor/
+data/raw/
+└── hotel_bookings.csv   # cópia imutável da origem
 ```
 
 | Característica | Valor |
 |:---|---:|
-| Partições | &lt;n&gt; |
-| Arquivos | &lt;n&gt; |
-| Registros | &lt;n&gt; |
-| Colunas | &lt;n&gt; |
-| Volume na origem | &lt;n&gt; GB |
-| Período | &lt;aaaa a aaaa&gt; |
+| Arquivos | 1 |
+| Registros | 119.390 |
+| Colunas | 32 |
+| Período | julho de 2015 a agosto de 2017 |
 
 ## Grão e conteúdo
 
-Cada linha é um(a) **&lt;grão do registro&gt;** (`coluna_identificadora`).
+Cada linha é **uma reserva** feita em um dos dois hotéis. Não há uma coluna
+identificadora única de reserva: `is_canceled`, `agent`, `company` e as demais
+colunas descrevem a reserva, mas nenhuma delas (nem a combinação de todas) garante
+que duas linhas iguais sejam reservas diferentes. Por isso a base tem 26,8% de
+linhas exatamente duplicadas, registradas e mantidas, não descartadas, como descrito
+em [Entendimento dos dados](entendimento-dados.md).
 
-<span style="color:red">**Descreva as dimensões disponíveis e, se a tabela for
-desnormalizada, quantas dimensões estão embutidas nela.**</span>
-
-As métricas aditivas são:
+As métricas aditivas são poucas, porque a base é predominantemente categórica:
 
 | Métrica | Descrição |
 |:---|:---|
-| `nome_da_metrica` | &lt;o que é contabilizado e em que unidade&gt; |
-| `nome_da_metrica` | &lt;o que é contabilizado e em que unidade&gt; |
+| `adr` | Tarifa média diária da reserva (*Average Daily Rate*) |
+| `lead_time` | Dias de antecedência entre a reserva e a chegada prevista |
+| `stays_in_weekend_nights` + `stays_in_week_nights` | Total de noites da estadia (derivado em `total_nights`) |
+| `adults` + `children` + `babies` | Total de hóspedes da reserva (derivado em `total_guests`) |
 
 ## Fluxo de dados no projeto
 
 ```mermaid
 flowchart LR
-    A["Origem<br/>formato e volume"] --> B["data/raw<br/>o que é materializado"]
-    B --> C["data/processed/base curada<br/>colunas curadas"]
-    C --> D["data/processed/agregados<br/>um por objetivo"]
-    D --> E["notebooks<br/>figuras, tabelas e relatórios"]
+    A["Kaggle<br/>119.390 x 32"] --> B["data/raw<br/>copia imutavel"]
+    B --> C["02-ajustes-dados<br/>hotel_bookings_tratado.csv"]
+    C --> D["03-preparacao<br/>hotel_bookings_preprocessed.csv, 98 colunas"]
+    D --> E["04-0 a 04-3<br/>modelo, reducao, regras"]
+    E --> F["05-avaliacao e 06-implantacao<br/>segmentos e segmentar()"]
 ```
 
-<span style="color:red">**Indique o notebook e o módulo responsáveis pela carga, e se ela é
-idempotente (pode ser reexecutada sem duplicar dado).**</span>
+A carga é implementada nos próprios notebooks, não em um módulo de ingestão
+separado: cada notebook lê `data/raw/hotel_bookings.csv` (ou a saída do notebook
+anterior) e grava o arquivo seguinte em `data/processed/`. É idempotente, porque
+cada etapa sempre parte da base bruta ou da saída documentada da etapa anterior,
+nunca de um arquivo editado à mão.
 
 ## Fontes complementares
 
-Dados que não vêm da origem principal, mas entram na análise.
-
-| Arquivo | Conteúdo |
-|:---|:---|
-| `data/raw/arquivo.csv` | &lt;o que contém e para que serve&gt; |
+Nenhuma. Todo o projeto se apoia na base única do Kaggle.
 
 ## Reprodução
 
 ```bash
-# comandos que refazem a carga do zero
-uv run invoke ingestao
-uv run invoke preparacao
+uv run jupyter nbconvert --to notebook --execute --inplace notebooks/00-dicionario-dados.ipynb
+uv run jupyter nbconvert --to notebook --execute --inplace notebooks/01-analise-exploratoria.ipynb
 ```
+
+!!! tip "Se a origem sair do ar"
+    O arquivo bruto não é versionado no repositório (`data/raw/` está no
+    `.gitignore`); quem clonar o repositório precisa baixar `hotel_bookings.csv` do
+    Kaggle e colocá-lo em `data/raw/` antes de rodar os notebooks.

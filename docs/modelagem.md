@@ -118,3 +118,22 @@ menos, o que faz sentido: sobra pouco tempo para desistir.
 | `data/processed/hotel_bookings_umap.csv` | 119.390 reservas × 5 componentes UMAP |
 | `data/processed/regras_associacao.csv` | 523 regras fortes (antecedente, consequente, suporte, confiança, lift) |
 | `docs/imagens/` (gerado ao rodar os notebooks) | gráficos de variância acumulada, cargas, importância e suporte×confiança |
+
+## Experimento complementar: `07_modelagem_bonus.ipynb`
+
+Compara K-Means, Mini Batch K-Means, Bisecting K-Means e Birch sobre uma amostra
+controlada de 5.000 reservas, depois treina o vencedor na base inteira. É um
+experimento de verificação, não substitui a escolha feita em `04-0`/`04-1`: o
+modelo oficial (K-Means, k=5) continua sendo o único usado em `05-avaliacao.ipynb`
+e `06-implantacao.ipynb`. O resultado deste notebook é salvo em
+`models/model_bonus_hotel_<algoritmo>.joblib`, separado do artefato oficial.
+
+**Reconciliação entre k=2 e k=5.** Por silhueta pura, na amostra de 5.000
+reservas o melhor resultado é k=2 (Mini Batch K-Means, 0,1249), levemente acima
+do melhor resultado com k=5 (K-Means, 0,1243); a diferença (0,0007) está dentro
+do ruído esperado entre amostra e base inteira, e some na base completa (k=2
+treinado em toda a base cai para 0,100, abaixo dos 0,1257 do k=5 oficial). A
+equipe manteve k=5 porque o Canvas do Problema (campos 4, 6 e 10) fixa a regra
+de negócio: uma ação diferenciada por grupo, no máximo cinco; k=2 daria só duas
+ações possíveis. A seção "Como ler o que saiu", no final do próprio
+`07_modelagem_bonus.ipynb`, detalha essa comparação.

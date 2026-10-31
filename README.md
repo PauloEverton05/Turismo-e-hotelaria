@@ -1,31 +1,64 @@
-# <Título do projeto>
+# Turismo e Hotelaria: segmentação de reservas de hotel
 
-Insira aqui uma introdução para que o leitor entenda o contexto e os problemas identificados. Tente apresentar uma justificativa para o projeto. É desejável que também se insira um [graphical abstract](https://www.elsevier.com/authors/tools-and-resources/visual-abstract).
+Projeto de Aprendizado Não Supervisionado (Tema 02: Turismo e hotelaria). Uma
+organização que administra um resort e um hotel urbano trata as duas operações com a
+mesma política de overbooking, canal de venda e antecedência de reserva. Este projeto
+investiga se as 119.390 reservas registradas entre 2015 e 2017 se organizam
+naturalmente em perfis distintos, sem usar o desfecho da reserva (cancelada ou não)
+para formar esses perfis, e o que cada perfil deveria receber de política
+diferenciada.
+
+A base é a *Hotel Booking Demand* (Antonio, de Almeida & Nunes, 2019), pública e de
+uso livre (CC BY 4.0). Contexto completo, com o Canvas do Problema e as perguntas
+orientadas a dados, em [`docs/index.md`](docs/index.md) e
+[`docs/pbl/canvas-do-problema.md`](docs/pbl/canvas-do-problema.md).
 
 ## Objetivos e resultados chave
 
-Em termos simples, os "Objetivos" se relacionam com a meta do projeto, e os "Resultados-Chave" expressam como essa meta será alcançada. Os Objetivos e resultados chave devem ser definidos no início de um projeto. A ideia é escolher uma métrica associada a um projeto e defini-la como o objetivo. Isso mostra a meta que você deseja alcançar. Em seguida, os resultados-chave são definidos para mostrar como atingir o objetivo. Os resultados principais são mensuráveis ​​e geralmente limitados a três a cinco por objetivo.
+- Descobrir quantos perfis de reserva existem na carteira, no máximo cinco por
+  restrição orçamentária (uma ação diferenciada custa por grupo).
+  - Agrupar as reservas sem usar `is_canceled` como atributo de entrada.
+  - Caracterizar cada grupo em linguagem de negócio (antecedência, tarifa,
+    cancelamento).
+- Verificar se o cancelamento diferencia os grupos encontrados.
+  - Medir a razão de cancelamento entre o grupo de maior e o de menor risco.
+  - Confirmar a diferença com teste estatístico (qui-quadrado).
+- Entregar o resultado de forma que sirva depois que o notebook de modelagem
+  fechar.
+  - Publicar uma função que classifica reservas novas no segmento certo.
+  - Validar a classificação em reservas que o modelo nunca viu.
 
-Em síntese, os objetivos estão ligados as entregas e os resultados chave aos passos que precisam se seguir para conseguir alcançar os resultados.
-Exemplo de objetivos e resultados chave aplicados a projetos de ciência de dados.
-
- - Realizar uma análise exploratória de dados de <conjunto de dados>
-    - Indentificar variáveis, descrevê-las e definir os tipos de dados
-    - Realizar transformação de variáveis (codificação)
-    - Tratar de valores faltantes e valores discrepantes
-    - ...
- - Criar modelo de detecção de fakenews
-    - Realizar transformação de dados textuais utilizando o tf-idf
-    - ...
- - ...
+Resultados obtidos, com números e critério de aceite, em
+[`docs/avaliacao.md`](docs/avaliacao.md) e no relatório consolidado
+[`docs/relatorio-final.md`](docs/relatorio-final.md).
 
 ## Conteúdo
 
-Utilize esta seção para descrever o que cada notebook faz. Se tiver gerado algum relatório, também utilize essa seção para descrevêlo. Isso facilitará a leitura.
+- `00-dicionario-dados.ipynb`: gera o dicionário de dados a partir das 32 colunas
+  originais da base.
+- `01-analise-exploratoria.ipynb`: análise exploratória da base bruta.
+- `02-ajustes-dados.ipynb`: limpeza dos dados (`hotel_bookings_tratado.csv`).
+- `03-preparacao.ipynb`: matriz pré-processada de 98 colunas, com `is_canceled`
+  reservado fora do arquivo de modelagem.
+- `04-0-modelagem-cluster.ipynb` e `04-1-modelagem-cotovelo.ipynb`: comparam
+  algoritmos de agrupamento e escolhem o modelo oficial (K-Means, k=5).
+- `04-2-modelagem-reducao.ipynb`: redução de dimensionalidade (PCA + UMAP), apoio à
+  leitura dos grupos.
+- `04-3-modelagem-associacao.ipynb`: regras de associação (Apriori/Eclat/FP-Growth)
+  entre características das reservas.
+- `05-avaliacao.ipynb`: confronta o modelo escolhido com os critérios de aceite do
+  Canvas do Problema.
+- `06-implantacao.ipynb`: publica a função `segmentar()`, que classifica reservas
+  novas no segmento correto.
+- `07_modelagem_bonus.ipynb`: experimento complementar, compara outros algoritmos
+  de agrupamento; não substitui o modelo oficial.
+
+Relatório consolidado das fases 1 a 6 em
+[`docs/relatorio-final.md`](docs/relatorio-final.md).
 
 ## Utilização
 
-Descreva aqui quais os passos necessários (dependências externas, comandos, etc.) para replicar o seu projeto. Instalação de dependências necessárias, criação de ambientes virtuais, etc. Este modelo é baseado em um projeto utilizando o [uv](https://docs.astral.sh/uv/) como gerenciador de dependências e ambientes virtuais. Você pode utilizar o `conda`, ambientes virtuais genéricos do Python ou até mesmo containers do docker. Mas tente fazer algo que seja facilmente reprodutível.
+Este projeto usa o [uv](https://docs.astral.sh/uv/) para gerenciar dependências e ambiente virtual.
 
 Passos básicos com o `uv`:
 
@@ -60,12 +93,10 @@ uv add --group docs <pacote>
 A versão do Python utilizada está fixada em [`.python-version`](.python-version); o `uv` instala e usa essa versão automaticamente.
 
 ## Desenvolvedores
- - [Contribuidor 1](http://github.com/contribuidor_1)
- - [Contribuidor 2](http://github.com/contribuidor_2)
+ - [Paulo Everton Souza Rodrigues](https://github.com/PauloEverton05)
+ - [Luan Victor Gurgel Quintela](https://github.com/luanv18)
 
 ## Organização de diretórios
-
-> **Nota**: essa seção é somente para entendimento do usuário do template. Por favor removê-la quando for atualizar este `README.md`
 
 ```
 .

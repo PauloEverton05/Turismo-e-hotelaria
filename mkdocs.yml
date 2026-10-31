@@ -1,8 +1,8 @@
-site_name: Nome do projeto
-site_description: Descrição do projeto
-site_url: http://url_do_repositorio
-repo_url: http://url_do_repositorio
-repo_name: nome-do-repositorio
+site_name: Turismo e Hotelaria
+site_description: Segmentação de reservas de hotel em até 5 grupos, sem usar o cancelamento como atributo de entrada
+site_url: https://github.com/PauloEverton05/Turismo-e-hotelaria
+repo_url: https://github.com/PauloEverton05/Turismo-e-hotelaria
+repo_name: PauloEverton05/Turismo-e-hotelaria
 
 nav:
   - Descrição do projeto: index.md
@@ -15,6 +15,7 @@ nav:
   - Preparação dos dados: preparacao.md
   - Modelagem dos dados: modelagem.md
   - Avaliação dos resultados: avaliacao.md
+  - Relatório final: relatorio-final.md
   - Implementação: implementacao.md
   - Status do projeto: status.md
 

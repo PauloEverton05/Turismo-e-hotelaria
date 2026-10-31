@@ -3,107 +3,106 @@
 Esta página responde a três perguntas sobre o conjunto de dados: **o que existe**, **em que
 qualidade** e **o que isso impede ou permite** dentro dos objetivos do projeto.
 
-!!! tip "Como preencher esta página"
-    Preencha depois de [Fonte dos dados](fonte-dados.md) e antes de
-    [Preparação dos dados](preparacao.md): aqui você descreve o que encontrou, lá você
-    descreve o que fez a respeito.
-
-    Regras práticas:
-
-    - descreva o **grão** antes de qualquer outra coisa — quase todo erro de análise nasce
-      de somar coisas em grãos diferentes;
-    - agrupe as colunas por **dimensão de negócio**, não em ordem alfabética: é assim que
-      quem conhece o negócio procura;
-    - confronte os dados com os [critérios de sucesso](criterios-sucesso.md) e diga, para
-      cada requisito, se ele está **atendido, parcial ou inviável**;
-    - registre cada achado de qualidade com a **consequência para a análise**, não apenas a
-      constatação ("a coluna X tem 30% de nulo" → "por isso a distribuição de X é calculada
-      sobre a base com informação");
-    - o que não puder ser resolvido com dado disponível vira **limitação declarada**, não
-      um objetivo silenciosamente reduzido.
-
 ## Dados iniciais
 
-<span style="color:red">**Indique de onde vieram os dados analisados aqui e em qual
-notebook está a apuração desta página.**</span>
+Os dados analisados aqui vêm de [Fonte dos dados](fonte-dados.md): a base bruta
+`data/raw/hotel_bookings.csv`. A apuração desta página está em
+`notebooks/01-analise-exploratoria.ipynb`, que parte da base bruta e do dicionário
+gerado em `00-dicionario-dados.ipynb`.
 
 ## Descrição dos dados
 
 ### Grão
 
-Cada linha é um(a) **&lt;grão do registro&gt;** (`coluna_identificadora`).
+Cada linha é **uma reserva** de hotel (resort ou urbano). Não há coluna
+identificadora única de reserva na origem.
 
-<span style="color:red">**Diga se a tabela é normalizada ou achatada e, se for achatada,
-quantas dimensões estão embutidas nela.**</span>
+A tabela é **achatada**: traz embutidas, numa única linha, as dimensões de
+calendário, hóspedes, canal de venda, quarto e desfecho da reserva. Não há
+normalização a desfazer.
 
 ### Grupos de colunas
 
 | Dimensão | Exemplos de colunas |
 |:---|:---|
-| &lt;Dimensão de negócio&gt; | `coluna_a`, `coluna_b`, `coluna_c` |
-| &lt;Dimensão de negócio&gt; | `coluna_d`, `coluna_e` |
-| Métricas | `metrica_a`, `metrica_b` |
+| Desfecho (vazamento, reservado para avaliação) | `is_canceled`, `reservation_status`, `reservation_status_date` |
+| Antecedência e calendário | `lead_time`, `arrival_date_year/month/week_number/day_of_month` |
+| Estadia e hóspedes | `stays_in_weekend_nights`, `stays_in_week_nights`, `adults`, `children`, `babies` |
+| Canal e origem | `country`, `market_segment`, `distribution_channel`, `agent`, `company` |
+| Quarto e tarifa | `reserved_room_type`, `assigned_room_type`, `deposit_type`, `adr` |
+| Métricas | `adr`, `total_nights`, `total_guests` (as duas últimas, derivadas) |
 
 ### Cobertura frente aos critérios de sucesso
 
 | Requisito | Situação |
 |:---|:---|
-| &lt;Requisito vindo dos critérios de sucesso&gt; | **atendida** — &lt;com que dado&gt; |
-| &lt;Requisito vindo dos critérios de sucesso&gt; | **parcial** — &lt;o que falta&gt; |
-| &lt;Requisito vindo dos critérios de sucesso&gt; | **inviável** — &lt;por quê&gt; |
+| Entidade de análise é a reserva (Canvas §7) | **atendida**, 119.390 linhas, uma por reserva |
+| Base sem vazamento na formação dos grupos (Canvas §10) | **atendida**, `is_canceled`, `reservation_status` e `reservation_status_date` identificados e reservados desde a EDA |
+| Distinguir reservas por hotel e canal (pergunta 5 do Canvas) | **parcial**, a coluna existe (`hotel`, `market_segment`), mas o recorte por hotel e canal não foi feito na modelagem |
+| Identificar reserva individual (chave única) | **inviável**, a base não traz identificador de reserva, o que impede confirmar se uma linha duplicada é a mesma reserva ou um evento repetido |
 
 ## Qualidade dos dados
 
 ### Valores sentinela
 
-Muitos sistemas de origem não gravam nulo: a ausência de informação vira uma categoria de
-texto ou um código negativo. Sem tratamento, essas sentinelas aparecem nas distribuições
-como se fossem valores reais.
+A origem usa o texto `NULL` para marcar ausência, convertido em valor ausente
+(`NaN`) já na leitura, em `00-dicionario-dados.ipynb` e em
+`01-analise-exploratoria.ipynb`.
 
 | Sentinela | Significado |
 |:---|:---|
-| `<valor sentinela>` | &lt;o que representa na origem&gt; |
-| `<valor sentinela>` | &lt;o que representa na origem&gt; |
+| `NULL` em `agent` | Reserva sem agência de viagens associada |
+| `NULL` em `company` | Reserva sem empresa associada |
+| `NULL` em `country` | País de origem não informado |
+| `NULL` em `children` | Nenhuma criança informada na reserva |
 
-<span style="color:red">**Diga onde essas regras estão implementadas e se há exceção
-deliberada — alguma coluna em que a sentinela é categoria legítima e deve ser preservada.**</span>
+Essas quatro colunas são a exceção deliberada: a ausência não é descartada nem
+imputada com uma média, porque é informativa (por exemplo, "sem agência" é, em si,
+um canal de venda).
 
 ### Achados que mudam a análise
 
-Registre aqui o que foi descoberto na exploração e que **altera alguma decisão** adiante.
-
-??? note "O que costuma aparecer nesta seção"
-    - **coluna quase certa**: existem duas colunas parecidas e a informação útil está na
-      menos óbvia;
-    - **sujeira de formatação**: espaços de preenchimento, caixa inconsistente ou acentuação
-      que fragmentam a mesma categoria em várias;
-    - **preenchimento descontínuo**: a coluna deixa de ser alimentada em parte da série;
-    - **ausência estrutural, não aleatória**: o campo falta justamente em um subconjunto
-      (um canal, um período, um tipo de cliente) — descartar essas linhas enviesa o retrato;
-    - **valores extremos legítimos**: outliers que são reais e não podem ser removidos de
-      somas, mas distorcem médias.
-
-1. <span style="color:red">**Achado — e o que ele muda na análise.**</span>
-2. <span style="color:red">**Achado — e o que ele muda na análise.**</span>
-3. <span style="color:red">**Achado — e o que ele muda na análise.**</span>
+1. **26,8% de linhas exatamente duplicadas, sem chave de reserva.** A base não
+   fornece identificador único; por isso as duplicatas são contadas, mas mantidas
+   em toda a cadeia (EDA, preparação e modelagem), como registrado em
+   `01-analise-exploratoria.ipynb`. É uma decisão aberta, não resolvida: a
+   clusterização não foi testada na versão sem duplicatas.
+2. **Taxa geral de cancelamento de 37%.** Mede o tamanho do problema de negócio,
+   não é usada como atributo de entrada em nenhuma etapa de agrupamento, só como
+   critério de avaliação em [Avaliação dos resultados](avaliacao.md).
+3. **Ausência concentrada em `agent`, `company` e `country`.** São exatamente as
+   três colunas de alta cardinalidade da base; a ausência nelas é tratada como
+   categoria própria (`Sem agência`, `Sem empresa`, `País não informado`), em vez
+   de ser descartada ou imputada estatisticamente.
+4. **`is_canceled` e `reservation_status`/`reservation_status_date` são vazamento
+   de rótulo.** Descrevem o desfecho da reserva, registrado depois dela ter
+   acontecido; por isso são excluídas da matriz de modelagem em
+   [Preparação dos dados](preparacao.md) e só voltam na avaliação.
 
 ## Dimensões-chave
 
-Use esta seção para detalhar uma dimensão que exigiu tratamento próprio — porque não existia
-na origem, porque foi derivada, ou porque sustenta sozinha um critério de aceite.
-
-<span style="color:red">**Descreva a dimensão: de onde ela vem, como é derivada e por que a
-derivação foi feita assim.**</span>
+A dimensão que exigiu tratamento próprio é `country`: tem 178 categorias, a maior
+cardinalidade entre as colunas nominais da base. Um One-Hot direto sobre ela
+criaria mais colunas do que todas as outras variáveis nominais somadas, e a cauda
+tem países com 1 ou 2 reservas, insuficientes para sustentar um perfil de grupo.
 
 | Valor | Descrição | Regra de derivação |
 |:---|:---|:---|
-| `<valor>` | &lt;o que significa&gt; | &lt;condição que o produz&gt; |
-| `<valor>` | &lt;o que significa&gt; | &lt;condição que o produz&gt; |
+| 15 países originais mais frequentes | mantidos com o próprio código do país | estão entre os 15 valores mais frequentes de `country` |
+| `Outro` | agrupa os 163 países restantes | não está entre os 15 mais frequentes |
+
+A derivação é feita em `03-preparacao.ipynb`, descrita em
+[Preparação dos dados](preparacao.md#reduzindo-a-cardinalidade-de-country).
 
 ## Limitações
 
-O que os dados **não** permitem responder, com o impacto em cada objetivo afetado.
-
-<span style="color:red">**Declare cada limitação e qual objetivo ela afeta. Se depender de
-dado a ser fornecido por terceiro, registre também nas pendências dos
-[critérios de sucesso](criterios-sucesso.md).**</span>
+- **Sem chave de reserva**, não é possível confirmar se uma duplicata exata é a
+  mesma reserva lançada duas vezes ou duas reservas de negócio diferentes com
+  atributos iguais. Afeta a decisão de manter ou remover duplicatas antes de
+  agrupar, registrada como pendência em
+  [Critérios de sucesso](criterios-sucesso.md#pendencias-de-dados).
+- **Sem distribuição por hotel e canal de venda já cruzada no desenho da EDA**,
+  a pergunta 5 do Canvas do Problema fica sem resposta nesta cadeia.
+- **Sem dado de receita real por ação tomada**, qualquer leitura financeira do
+  projeto (ver [Avaliação dos resultados](avaliacao.md)) é hipotética, não
+  validada com a operação.

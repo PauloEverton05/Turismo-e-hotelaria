@@ -68,8 +68,15 @@ Indicadores definidos em `05-avaliacao.ipynb`, seção de impacto operacional.
     - **desempenho do modelo**, quando houver: as métricas se mantêm em produção;
     - **desvio de distribuição**: os dados de entrada continuam parecidos com os de treino.
 
-<span style="color:red">**Registre quem é acionado quando algo falha e qual é o
-comportamento esperado enquanto o problema não é resolvido.**</span>
+Este é um projeto acadêmico de duas pessoas, sem plantão real nem SLA de
+produção (ver [Entendimento de negócio](entendimento-negocio.md#equipe-tecnica)).
+Quando um indicador acima desvia, quem reexecuta a cadeia de notebooks
+(`02-ajustes-dados` a `06-implantacao`) e regrava os artefatos é a dupla
+responsável pela modelagem e pela implantação: Paulo Everton Souza Rodrigues
+ou Luan Victor Gurgel Quintela, o que estiver disponível. Enquanto o desvio
+não é corrigido, a função `segmentar()` continua respondendo com o modelo
+atual (não trava nem recusa reserva nova): o risco é a classificação ficar
+desatualizada, não a função parar de funcionar.
 
 ### Retreinamento
 

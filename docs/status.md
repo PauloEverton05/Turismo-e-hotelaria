@@ -10,22 +10,26 @@
 ???+ abstract "Fase 2: Entendimento de negócio"
     - [x] Elaborar projeto inicial: [index.md](index.md) e
       [Canvas do Problema](pbl/canvas-do-problema.md) preenchidos
-    - [ ] Produzir relatório mineração dos dados
+    - [x] Produzir relatório mineração dos dados: seção 2 de
+      [relatorio-final.md](relatorio-final.md)
     - [ ] Fotografar o Quadro PBL (hoje é rascunho em texto, ver
       [quadro-pbl.md](pbl/quadro-pbl.md))
 
 ???+ abstract "Fase 3: Entendimento dos dados"
     - [x] Gerar conjunto de dados: `00-dicionario-dados.ipynb`
-    - [ ] Produzir relatório qualidade dos dados
+    - [x] Produzir relatório qualidade dos dados: seção 3 de
+      [relatorio-final.md](relatorio-final.md)
     - [x] Realizar descrição dos dados: `data/processed/dicionario.csv`
     - [x] Realizar análise exploratória: `01-analise-exploratoria.ipynb`
-    - [ ] Produzir relatório do entendimento dos dados
+    - [x] Produzir relatório do entendimento dos dados: seção 3 de
+      [relatorio-final.md](relatorio-final.md)
 
 ???+ abstract "Fase 4: Preparação dos dados"
     - [x] Gerar script de limpeza dos dados: `02-ajustes-dados.ipynb`
     - [x] Gerar conjunto de dados processado: `03-preparacao.ipynb`
       (`hotel_bookings_preprocessed.csv`)
-    - [ ] Produzir relatório preparação dos dados
+    - [x] Produzir relatório preparação dos dados: seção 3 de
+      [relatorio-final.md](relatorio-final.md)
 
 ???+ abstract "Fase 5: Modelagem"
     - [x] Gerar desenho do experimento da modelagem: ver [modelagem.md](modelagem.md)
@@ -35,7 +39,10 @@
     - [x] Redução de dimensionalidade (PCA + UMAP): `04-2-modelagem-reducao.ipynb`
     - [x] Regras de associação (Apriori/Eclat/FP-Growth):
       `04-3-modelagem-associacao.ipynb`
-    - [ ] Produzir relatório com os resultados
+    - [x] Experimento complementar de algoritmos de agrupamento (bonus, não
+      substitui o modelo oficial): `07_modelagem_bonus.ipynb`
+    - [x] Produzir relatório com os resultados: ver seção 4 de
+      [relatorio-final.md](relatorio-final.md)
 
 ???+ abstract "Fase 6: Avaliação"
     - [x] Produzir relatório da avaliação dos resultados: `05-avaliacao.ipynb` e
@@ -49,4 +56,5 @@
       `segmentar()`
     - [x] Produzir relatório de monitoramento e manutenção dos modelos:
       [implementacao.md](implementacao.md)
-    - [ ] Produzir relatório final contendo todas as fases anteriores
+    - [x] Produzir relatório final contendo todas as fases anteriores:
+      [relatorio-final.md](relatorio-final.md)
