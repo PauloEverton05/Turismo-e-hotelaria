@@ -3,7 +3,7 @@
  *
  * Os valores abaixo são um ponto de partida neutro. Para aplicar a identidade
  * visual da sua organização, troque apenas os hexadecimais das variáveis
- * `--brand-*` — os blocos de tema logo abaixo se ajustam sozinhos.
+ * `--brand-*`, os blocos de tema logo abaixo se ajustam sozinhos.
  */
 :root {
   /* Primárias */
@@ -16,7 +16,7 @@
   --brand-verde: #74C69D;
   --brand-amarelo: #F4D35E;
 
-  /* Complementares — acentos */
+  /* Complementares, acentos */
   --brand-coral: #EE6C4D;
   --brand-rosa: #F2A6A6;
   --brand-laranja: #F49D6E;

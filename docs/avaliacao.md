@@ -83,7 +83,7 @@ numeradas no `05-avaliacao.ipynb`.
 ## Registro do percurso PBL: contribuição individual e autoavaliação
 
 O PBL exige, como parte do produto final, o registro de quem fez o quê e a
-autoavaliação de cada integrante — não apenas o resultado técnico. Esta seção
+autoavaliação de cada integrante, não apenas o resultado técnico. Esta seção
 cobre essa exigência a partir de evidência objetiva: o histórico real de
 commits do repositório (`git log --numstat`) e o estado não commitado deste
 ambiente de trabalho, author-atribuído pela configuração local do git
@@ -101,7 +101,7 @@ Luan Victor Gurgel Quintela (`Luan Victor`)
 | `19a48b4`→`2b80dc0`→`49e07b4` | 16/10 | Luan Victor | `02-ajustes-dados` | Criação e reescrita do notebook de limpeza/ajuste de dados (3 iterações no mesmo dia) |
 | `fdad745` | 16/10 | Paulo Everton | `02-ajustes-dados`, `03-preparacao` | Ajustes na limpeza e criação do notebook de preparação (encoding/padronização) |
 | `1192a21` | 17/10 | Luan Victor | `00-dicionario-dados`, `01-analise-exploratoria` | Adaptação dos notebooks genéricos do template para o domínio de hotelaria |
-| `815bc2f` | 17/10 | Luan Victor | `04-0-modelagem-cluster`, `04-1-modelagem-cotovelo` | Decisão do número de grupos (método do cotovelo) e treino do K-Means (k=5) — o núcleo da clusterização |
+| `815bc2f` | 17/10 | Luan Victor | `04-0-modelagem-cluster`, `04-1-modelagem-cotovelo` | Decisão do número de grupos (método do cotovelo) e treino do K-Means (k=5), o núcleo da clusterização |
 | `94d9f03` | 17/10 | Paulo Everton | `04-2-modelagem-reducao`, `04-3-modelagem-associacao` | PCA/UMAP para interpretação dos grupos e regras de associação (Apriori/FP-Growth) |
 | `b4398e3` | 21/10 | Paulo Everton | Canvas do Problema, Quadro PBL (rascunho) | Preenchimento dos 11 campos do Canvas e redação do rascunho do Quadro PBL |
 | `7b9d9a2` | 21/10 | Paulo Everton | `05-avaliacao`, `06-implantacao` | Confronto com critérios de aceite, cenários financeiros, classificador de segmento para reservas novas |
@@ -113,7 +113,7 @@ Luan Victor Gurgel Quintela (`Luan Victor`)
 ### Síntese de contribuição por pessoa
 
 - **Luan Victor Gurgel Quintela:** autor do núcleo da clusterização
-  (`04-0`/`04-1` — escolha de k e treino do K-Means), da limpeza inicial dos
+  (`04-0`/`04-1`, escolha de k e treino do K-Means), da limpeza inicial dos
   dados (`02-ajustes-dados`), da adaptação dos notebooks de EDA ao domínio de
   hotelaria, e do notebook bônus (`07`).
 - **Paulo Everton Souza Rodrigues:** autor do scaffold do projeto, da EDA
@@ -125,8 +125,7 @@ Luan Victor Gurgel Quintela (`Luan Victor`)
 ### Autoavaliação individual
 
 A tabela acima é evidência objetiva (commits), não substitui a autoavaliação
-em si. Os campos abaixo são **rascunhos derivados apenas dessa evidência** —
-cada integrante deve revisar, corrigir e completar a própria seção em
+em si. Os campos abaixo são **rascunhos derivados apenas dessa evidência**, cada integrante deve revisar, corrigir e completar a própria seção em
 primeira pessoa antes da entrega; o que está aqui não é uma declaração real
 da pessoa.
 
@@ -142,14 +141,13 @@ da pessoa.
 - **O que aprendi de novo:** a diferença prática entre separação geométrica
   (silhueta) e separação que importa para o negócio. A silhueta ficou abaixo
   da meta (0,124 contra 0,25), mas quando cruzei os segmentos com
-  cancelamento a diferença foi de 6,6 vezes, com significância estatística —
-  aprendi que um critério técnico "não atendido" não significa que o
+  cancelamento a diferença foi de 6,6 vezes, com significância estatística, aprendi que um critério técnico "não atendido" não significa que o
   resultado não serve, e que é preciso ter os dois tipos de critério
   (técnico e de negócio) definidos antes de modelar, não depois, para não
   ficar refém de um número só.
 - **O que faria diferente:** eu teria centralizado as constantes de critério
   (silhueta mínima, faixa de k, teto de ruído) em um `src/config.py` desde o
-  início, em vez de deixar espalhadas pelos notebooks — isso já está
+  início, em vez de deixar espalhadas pelos notebooks, isso já está
   registrado como lacuna no `05-avaliacao`. Também teria fotografado o
   Quadro PBL em cada encontro, em vez de deixar um rascunho em texto para
   substituir depois; isso virou uma pendência que deveria ter sido resolvida
@@ -159,7 +157,7 @@ da pessoa.
   avaliação, implantação e documentação) com resultados que se sustentam
   tecnicamente e fazem sentido de negócio, mas deixei passar dois itens de
   entrega explícitos do PBL (pitch executivo e registro fotográfico dos
-  quadros) que não dependiam de dado nenhum, só de organização — por isso
+  quadros) que não dependiam de dado nenhum, só de organização, por isso
   não é 9 ou 10.
 
 #### Luan Victor Gurgel Quintela
@@ -168,9 +166,9 @@ da pessoa.
   adaptação dos notebooks de dicionário/EDA ao domínio de hotelaria, decisão
   do número de grupos e treino da clusterização (K-Means, k=5), e notebook
   bônus de modelagem.
-- **O que aprendi de novo:** `TODO — preencher em primeira pessoa`
-- **O que faria diferente:** `TODO — preencher em primeira pessoa`
-- **Nota de autoavaliação (0-10) e justificativa:** `TODO — preencher em primeira pessoa`
+- **O que aprendi de novo:** `TODO, preencher em primeira pessoa`
+- **O que faria diferente:** `TODO, preencher em primeira pessoa`
+- **Nota de autoavaliação (0-10) e justificativa:** `TODO, preencher em primeira pessoa`
 
 !!! warning "Pendência"
     A divisão de trabalho acima é rastreável e verificável (commits reais,
