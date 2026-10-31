@@ -1,0 +1,67 @@
+[
+  {
+    "id": "problema",
+    "title": "O problema",
+    "segs": [
+      "Hoje apresentamos a segmentação das reservas do resort e do hotel urbano.",
+      "A diretoria pediu para descobrir quantos perfis de reserva existem, e o que fazer com cada um.",
+      "O orçamento financia no máximo cinco ações diferentes, uma por grupo.",
+      "Analisamos cento e dezenove mil reservas, sem nenhum rótulo prévio de bom ou ruim."
+    ]
+  },
+  {
+    "id": "quantos-grupos",
+    "title": "Quantos grupos, e por quê",
+    "segs": [
+      "Testamos vários algoritmos de agrupamento sobre as reservas.",
+      "O K-Means com cinco grupos foi o que melhor equilibrou separação entre perfis e tamanho mínimo por grupo.",
+      "Nenhum grupo ficou abaixo de doze por cento da carteira, o suficiente para sustentar uma ação própria.",
+      "Cinco é também o teto que o orçamento permite, então o número final respeita as duas restrições."
+    ]
+  },
+  {
+    "id": "caracteriza-grupo",
+    "title": "O que caracteriza cada grupo",
+    "segs": [
+      "Chamamos os grupos de A a E, do mais arriscado ao mais seguro.",
+      "O grupo A reserva com quase seis meses de antecedência, e cancela em noventa e nove por cento dos casos.",
+      "O grupo E reserva em média dez dias antes da chegada, e cancela em apenas quinze por cento.",
+      "Entre o grupo mais arriscado e o mais seguro, a diferença de cancelamento é de seis vezes e meia.",
+      "Antecedência, tarifa e taxa de cancelamento são o que realmente separa um grupo do outro."
+    ]
+  },
+  {
+    "id": "padroes",
+    "title": "Os padrões por trás da segmentação",
+    "segs": [
+      "Além de agrupar, buscamos combinações de características que aparecem juntas com mais frequência do que o esperado.",
+      "Encontramos mais de quinhentas regras de associação confiáveis.",
+      "Reservas de clientes de Portugal, combinadas com certos canais, aumentam o risco de cancelamento.",
+      "Reservas de última hora, ao contrário, quase nunca cancelam.",
+      "Esses padrões, encontrados por um caminho totalmente diferente, confirmam a mesma divisão dos grupos."
+    ]
+  },
+  {
+    "id": "acao-por-grupo",
+    "title": "O que fazer com cada grupo",
+    "segs": [
+      "Para o grupo A, de maior risco, propomos cobrar confirmação antecipada ou depósito.",
+      "Para o grupo E, de última hora, a confirmação pode ser automática, sem reserva extra de segurança.",
+      "Os grupos B, C e D recebem políticas intermediárias, de acordo com o risco e a tarifa de cada um.",
+      "Qualquer reserva nova já pode ser classificada automaticamente no grupo certo, em noventa e nove vírgula sete por cento dos casos.",
+      "Isso significa que a política pode começar a valer desde o momento da reserva, não depois."
+    ]
+  },
+  {
+    "id": "resultado",
+    "title": "Resultado e próximos passos",
+    "segs": [
+      "No cenário base, estimamos um resultado de cento e cinquenta e cinco mil dólares no primeiro ano.",
+      "É uma premissa hipotética, que precisa ser validada com a operação antes de qualquer decisão de investimento.",
+      "Cinco dos seis critérios técnicos definidos antes da modelagem foram atendidos.",
+      "O único que não foi, a separação geométrica entre os grupos, não compromete o uso real do modelo.",
+      "Nossa recomendação é implantar a segmentação, com acompanhamento mensal da taxa de cancelamento por grupo.",
+      "Ficamos abertos para perguntas e para a discussão com o conselho."
+    ]
+  }
+]

@@ -132,7 +132,9 @@ completa de ação por segmento em
 - **Quadro PBL** ainda é um rascunho em texto
   ([quadro-pbl.md](pbl/quadro-pbl.md)), não a foto do quadro físico da
   equipe;
-- **apresentação (pitch de 10 minutos)** ainda não produzida.
+- **autoavaliação do Luan Victor Gurgel Quintela**, em
+  [Avaliação dos resultados](avaliacao.md#registro-do-percurso-pbl-contribuicao-individual-e-autoavaliacao),
+  ainda não foi escrita por ele em primeira pessoa.
 
 ## 10. Como reproduzir
 

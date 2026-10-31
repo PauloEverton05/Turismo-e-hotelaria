@@ -58,3 +58,5 @@
       [implementacao.md](implementacao.md)
     - [x] Produzir relatório final contendo todas as fases anteriores:
       [relatorio-final.md](relatorio-final.md)
+    - [x] Produzir pitch executivo narrado: `docs/apresentacoes/pitch/index.html`
+      (abrir direto no navegador, offline)

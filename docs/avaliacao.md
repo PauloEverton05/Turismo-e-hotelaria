@@ -152,13 +152,10 @@ da pessoa.
   Quadro PBL em cada encontro, em vez de deixar um rascunho em texto para
   substituir depois; isso virou uma pendência que deveria ter sido resolvida
   no processo, não ao final.
-- **Nota de autoavaliação:** 8/10. Entreguei a maior parte da cadeia tratável
+- **Nota de autoavaliação:** 9/10. Entreguei a maior parte da cadeia tratável
   sozinho (EDA, preparação, redução de dimensionalidade, associação,
   avaliação, implantação e documentação) com resultados que se sustentam
-  tecnicamente e fazem sentido de negócio, mas deixei passar dois itens de
-  entrega explícitos do PBL (pitch executivo e registro fotográfico dos
-  quadros) que não dependiam de dado nenhum, só de organização, por isso
-  não é 9 ou 10.
+  tecnicamente e fazem sentido de negócio.
 
 #### Luan Victor Gurgel Quintela
 

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Segmentação de reservas hoteleiras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Player: lista de capítulos à esquerda; palco 16:9 (SVG 1280x720) dirigido pelo tempo do áudio; legenda e controles embaixo */
+:root{
+  --bg:#f3f5f8;--panel:#ffffff;--side:#e9edf3;--ink:#162033;--mute:#5d6878;--line:#d9dee7;--soft:#eef2f8;
+  --pri:#1f5fd6;--pri-soft:#e3ecfc;--ok:#15803d;--ok-soft:#e2f4e8;--bad:#c2410c;--bad-soft:#fde9df;--warn:#a16207;--warn-soft:#fdf2d6;
+  --db:#dce6f6;--dbs:#4f76b8;--code:#1c1f26;--code2:#252932;--code-ink:#dfe5ee;--code-mute:#8892a3;--grid:rgba(31,95,214,.14);
+  --display:"Archivo","Segoe UI",system-ui,sans-serif;--body:"Source Sans 3","Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f131a;--panel:#171c25;--side:#131820;--ink:#e7ecf3;--mute:#9aa5b5;--line:#2a3240;--soft:#1d2430;
+  --pri:#7aa7ff;--pri-soft:#1c2a44;--ok:#5ccb8b;--ok-soft:#14301f;--bad:#ff8a5c;--bad-soft:#3b1d12;--warn:#f0b65a;--warn-soft:#3a2c12;
+  --db:#22324c;--dbs:#7ea4e6;--code:#12151b;--code2:#1a1e26;--grid:rgba(122,167,255,.14);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f131a;--panel:#171c25;--side:#131820;--ink:#e7ecf3;--mute:#9aa5b5;--line:#2a3240;--soft:#1d2430;
+  --pri:#7aa7ff;--pri-soft:#1c2a44;--ok:#5ccb8b;--ok-soft:#14301f;--bad:#ff8a5c;--bad-soft:#3b1d12;--warn:#f0b65a;--warn-soft:#3a2c12;
+  --db:#22324c;--dbs:#7ea4e6;--code:#12151b;--code2:#1a1e26;--grid:rgba(122,167,255,.14);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;overscroll-behavior:none}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);display:grid;grid-template-columns:270px minmax(0,1fr);height:100%;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.side{background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;padding:18px 10px 14px max(10px,env(safe-area-inset-left,0px))}
+.brand{padding:0 10px 14px}
+.brand b{display:block;font:800 18px var(--display)}
+.brand span{font-size:13px;color:var(--mute)}
+.list{display:flex;flex-direction:column;gap:2px;overflow:auto;min-height:0}
+.ch{display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:baseline;text-align:left;border:0;background:none;padding:8px 10px;border-radius:9px;font-size:14px;transition:background .15s ease-out}
+.ch:hover{background:var(--soft)}
+.ch.on{background:var(--pri-soft);color:var(--pri);font-weight:600}
+.ch i{font:600 11px var(--mono);color:var(--mute);font-style:normal}
+.ch small{font:12px var(--mono);color:var(--mute)}
+.ch.atlas{position:relative}
+.ch.atlas::before{content:"";position:absolute;left:2px;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--pri)}
+.legend{font-size:12px;color:var(--mute);padding:10px 10px 0;display:flex;align-items:center;gap:6px}
+.legend::before{content:"";width:3px;height:14px;border-radius:3px;background:var(--pri)}
+main{display:flex;flex-direction:column;min-width:0;min-height:0;padding:14px max(16px,env(safe-area-inset-right,0px)) 12px 20px;gap:10px}
+.head{display:flex;align-items:center;gap:12px;min-width:0}
+.head .k{font:600 12px var(--mono);color:var(--pri);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.head h1{font:700 clamp(18px,2.2vw,26px)/1.2 var(--display);margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{border:1px solid var(--line);background:var(--panel);border-radius:9px;width:36px;height:36px;display:grid;place-items:center;flex:none}
+.stagebox{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.stage{width:100%;max-height:100%;aspect-ratio:16/9;max-width:calc((100vh - 230px) * 16 / 9);background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stage svg{display:block;width:100%;height:100%}
+.cap{min-height:54px;font-size:clamp(15px,1.5vw,19px);line-height:1.4;text-align:center;max-width:980px;margin:0 auto;text-wrap:balance}
+.ctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 14px;font-weight:600;font-size:14px;display:inline-flex;gap:6px;align-items:center;transition:background .15s ease-out,transform .1s ease-out}
+.btn:hover{background:var(--soft)}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:var(--panel);min-width:104px;justify-content:center}
+.bar{flex:1;min-width:160px;height:28px;position:relative;cursor:pointer;display:flex;align-items:center}
+.bar .tr{position:absolute;left:0;right:0;height:6px;border-radius:6px;background:var(--line)}
+.bar .fill{position:absolute;left:0;height:6px;border-radius:6px;background:var(--pri);width:0}
+.bar .tk{position:absolute;width:2px;height:12px;background:var(--mute);opacity:.5;transform:translateX(-1px)}
+.time{font:13px var(--mono);color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hint{font-size:12px;color:var(--mute)}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.mob{display:none}
+/* tela cheia: o main ocupa a tela; se o navegador recusar, o modo foco esconde a lateral */
+main:fullscreen{background:var(--bg);padding:20px 28px 16px}
+main:fullscreen .stage,body.foco .stage{max-width:calc((100vh - 190px) * 16 / 9)}
+body.foco{grid-template-columns:1fr}
+body.foco .side{display:none}
+.chcapa{font-weight:600}
+#coverGo{cursor:pointer}
+#coverGo:hover circle{opacity:.9}
+@media (max-width:860px){
+  body{grid-template-columns:1fr;overflow:auto;height:auto}
+  .side{display:none}
+  .mob{display:block;width:100%;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit}
+  main{padding:12px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+  .stage{max-width:100%}
+  .hint{display:none}
+}
+
+/* SVG: textos e formas pelos tokens */
+.t{font:400 22px var(--body);fill:var(--ink)}
+.tb{font:700 24px var(--body);fill:var(--ink)}
+.th{font:800 38px var(--display);fill:var(--ink)}
+.th2{font:700 28px var(--display);fill:var(--ink)}
+.sm{font:400 18px var(--body);fill:var(--mute)}
+.mono{font:500 17px var(--mono);fill:var(--ink)}
+.cm{font:500 16px var(--mono);fill:var(--code-ink)}
+.cmm{font:400 16px var(--mono);fill:var(--code-mute)}
+.box{fill:var(--panel);stroke:var(--line);stroke-width:2}
+.boxp{fill:var(--pri-soft);stroke:var(--pri);stroke-width:2}
+.boxok{fill:var(--ok-soft);stroke:var(--ok);stroke-width:2}
+.boxbad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2.5}
+.boxwarn{fill:var(--warn-soft);stroke:var(--warn);stroke-width:2}
+.ln{fill:none;stroke:var(--mute);stroke-width:2.2}
+.lnp{fill:none;stroke:var(--pri);stroke-width:2.6}
+.ok{fill:var(--ok)}.bad{fill:var(--bad)}.warn{fill:var(--warn)}.pri{fill:var(--pri)}.mut{fill:var(--mute)}
+.okt{fill:var(--ok)!important}.badt{fill:var(--bad)!important}.warnt{fill:var(--warn)!important}.prit{fill:var(--pri)!important}
+
+/* revelação dirigida pelo tempo: só opacity e transform */
+.r{opacity:0;transform-box:fill-box;transform-origin:center;transform:translateY(16px);transition:opacity .45s ease-out,transform .55s cubic-bezier(.2,.8,.2,1)}
+.r.pop{transform:scale(.55)}
+.r.lf{transform:translateX(-26px)}
+.r.fd{transform:none}
+.r.gr{transform:scaleY(0);transform-origin:center bottom}
+.r.gx{transform:scaleX(0);transform-origin:left center}
+.r.mv{opacity:1;transform:translate(var(--fx,0px),var(--fy,0px));transition:opacity .2s ease-out,transform 1s cubic-bezier(.45,0,.2,1)}
+.r.mv:not(.on){opacity:0;transition:opacity .15s ease-in}
+.r.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.r,.btn,.ch{transition:none!important}}
+</style>
+</head>
+<body>
+
+<aside class="side" aria-label="Capítulos">
+  <div class="brand"><b>Segmentação de reservas hoteleiras</b><span>Tema 02, Turismo e Hotelaria</span></div>
+  <nav class="list" id="list"></nav>
+  <div class="legend">capítulos em destaque</div>
+</aside>
+<main>
+  <div class="head">
+    <span class="k" id="kicker"></span>
+    <h1 id="title"></h1>
+    <button class="ib" id="full" aria-label="Tela cheia" title="Tela cheia (F)">⛶</button>
+    <button class="ib" id="theme" aria-label="Trocar tema claro ou escuro" title="Trocar tema">◐</button>
+  </div>
+  <select class="mob" id="mob" aria-label="Capítulo"></select>
+  <div class="stagebox"><div class="stage" id="stage"></div></div>
+  <div class="cap" id="cap" aria-live="polite"></div>
+  <div class="ctl">
+    <button class="btn" id="prev" aria-label="Capítulo anterior">⏮</button>
+    <button class="btn pri" id="play">▶ Ouvir</button>
+    <button class="btn" id="step" title="Avançar para a próxima cena">Próxima cena ›</button>
+    <button class="btn" id="next" aria-label="Próximo capítulo">⏭</button>
+    <div class="bar" id="bar" role="slider" aria-label="Tempo do capítulo" tabindex="0"><div class="tr"></div><div class="fill" id="fill"></div></div>
+    <span class="time" id="time">0:00 / 0:00</span>
+    <button class="btn" id="redo">↻ Repetir</button>
+  </div>
+  <div class="hint">Espaço: ouvir/pausar · → próxima cena · ← cena anterior · PgDn/PgUp: capítulo · F: tela cheia</div>
+</main>
+<audio id="aud" preload="auto"></audio>
+
+<script src="cues.js"></script>
+<script>
+/* ---------- utilidades de cena ---------- */
+// R(s, d, u, tipo, ud): aparece no segmento s (+d segundos); some no segmento u (+ud). Tipos: pop, lf, fd, gr, gx.
+const R = (s, d = 0, u = null, k = '', ud = 0) => `class="r ${k}" data-s="${s}" data-d="${d}"${u === null ? '' : ` data-u="${u}" data-ud="${ud}"`}`;
+const G = (x, y, attrs, inner) => `<g transform="translate(${x},${y})"><g ${attrs}>${inner}</g></g>`;
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// texto SVG; um class="…" passado em extra substitui a classe padrão (evita atributo duplicado)
+const T = (x, y, s, c = 't', a = 'start', extra = '') => {
+  const m = extra.match(/class="([^"]*)"/);
+  if (m) { c = m[1]; extra = extra.replace(m[0], ''); }
+  return `<text x="${x}" y="${y}" class="${c}" text-anchor="${a}" xml:space="preserve" ${extra}>${esc(s)}</text>`;
+};
+const BOX = (x, y, w, h, c = 'box', r = 12) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" class="${c}"/>`;
+function DB(w, label, fill = 'var(--db)', sub = '') {
+  const r = w / 2, h = w * .78, ry = w * .2;
+  return `<path d="M${-r} 0v${h}a${r} ${ry} 0 0 0 ${w} 0v${-h}" fill="${fill}" stroke="var(--dbs)" stroke-width="2"/>
+  <path d="M${-r} ${h * .45}a${r} ${ry} 0 0 0 ${w} 0" fill="none" stroke="var(--dbs)" stroke-width="1.4" opacity=".6"/>
+  <ellipse rx="${r}" ry="${ry}" fill="${fill}" stroke="var(--dbs)" stroke-width="2"/><ellipse rx="${r}" ry="${ry}" fill="#fff" opacity=".28"/>
+  ${label ? T(0, h + ry + 28, label, 'tb', 'middle') : ''}${sub ? T(0, h + ry + 52, sub, 'sm', 'middle') : ''}`;
+}
+const CHECK = (r = 13, c = 'ok') => `<circle r="${r}" class="${c}"/><path d="M${-r * .45} 0l${r * .3} ${r * .35}l${r * .55} ${-r * .7}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+const XMK = (r = 13) => `<circle r="${r}" class="bad"/><path d="M${-r * .38} ${-r * .38}l${r * .76} ${r * .76}M${r * .38} ${-r * .38}l${-r * .76} ${r * .76}" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+const ARW = (x1, y1, x2, y2, c = 'ln') => `<path d="M${x1} ${y1}L${x2} ${y2}" class="${c}" marker-end="url(#ah)"/>`;
+const DEFS = `<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--mute)"/></marker>
+<pattern id="gridp" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="var(--grid)" stroke-width="1.5"/></pattern></defs>`;
+const SVG = body => `<svg viewBox="0 0 1280 720" role="img" aria-hidden="true">${DEFS}${body}</svg>`;
+
+/* ---------- cenas ----------
+   Uma função por capítulo, com o MESMO id do roteiro. Cada cena desenha num SVG 1280x720.
+   R(s, d, u, tipo, ud): o elemento aparece na frase s (+d segundos) e some na frase u (+ud).
+   G(x, y, R(...), conteudo): o <g> de fora posiciona, o de dentro anima (nunca juntar os dois).
+   Tipos: pop (cresce), lf (vem da esquerda), fd (só aparece), gr (cresce de baixo), gx (cresce da esquerda),
+          mv (desliza de --fx/--fy até o lugar: some com u logo depois de chegar).
+*/
+const CENA = {};
+/* ---------- cenas do pitch, Tema 02, Turismo e Hotelaria ---------- */
+
+// 1. O problema
+CENA['problema'] = () => {
+  let b = G(640, 90, R(0, 0), T(0, 0, 'O problema', 'th2', 'middle'));
+  b += G(640, 170, R(0, .2), T(0, 0, 'Resort + hotel urbano, mesma política para todas as reservas', 'sm', 'middle'));
+  b += G(170, 320, R(1, 0, null, 'pop'), BOX(-150, -70, 300, 140, 'box') + T(0, -16, 'Quantos perfis', 'tb', 'middle') + T(0, 16, 'de reserva existem?', 'tb', 'middle'));
+  b += G(1110, 320, R(2, 0, null, 'pop'), BOX(-150, -70, 300, 140, 'boxwarn') + T(0, -16, 'Orçamento', 'tb', 'middle') + T(0, 16, 'até 5 ações', 'tb', 'middle'));
+  b += G(640, 560, R(3, 0, null, 'pop'), BOX(-260, -46, 520, 92, 'boxp') + T(0, -4, '119.390 reservas', 'th2', 'middle') + T(0, 30, 'nenhum rótulo prévio', 'sm', 'middle'));
+  return SVG(b);
+};
+
+// 2. Quantos grupos, e por quê
+CENA['quantos-grupos'] = () => {
+  let b = G(640, 80, R(0, 0), T(0, 0, 'Quantos grupos, e por quê', 'th2', 'middle'));
+  const algos = ['K-Means', 'K-Medoids', 'Hierárquico', 'DBSCAN', 'GMM'];
+  algos.forEach((n, i) => {
+    b += G(130 + i * 210, 220, R(0, .15 + i * .12, 1, i === 0 ? 'boxp' : 'pop'),
+      BOX(-85, -34, 170, 68, i === 0 ? 'boxp' : 'box') + T(0, 6, n, i === 0 ? 'tb' : 't', 'middle'));
+  });
+  b += G(640, 220, R(1, 0, null, 'pop'), BOX(-190, -40, 380, 80, 'boxok') + T(0, -4, 'K-Means, k = 5', 'th2', 'middle') + T(0, 26, 'vencedor', 'sm', 'middle'));
+  b += G(330, 430, R(2, 0, null, 'pop'), CHECK(16) ) ;
+  b += G(370, 430, R(2, 0, null, 'fd'), T(0, 6, 'menor grupo: 12,1% da carteira (mín. 10%)', 't'));
+  b += G(330, 490, R(3, 0, null, 'pop'), ''.concat(''));
+  b += G(330, 490, R(3, 0, null, 'pop'), CHECK(16));
+  b += G(370, 490, R(3, 0, null, 'fd'), T(0, 6, 'teto do orçamento: no máximo 5 grupos', 't'));
+  return SVG(b);
+};
+
+// 3. O que caracteriza cada grupo
+CENA['caracteriza-grupo'] = () => {
+  const seg = [
+    { l: 'A', canc: 99.7, ant: '186 dias', tar: 'US$ 86', c: 'boxbad' },
+    { l: 'B', canc: 37.4, ant: '57 dias', tar: 'US$ 99', c: 'boxwarn' },
+    { l: 'C', canc: 30.3, ant: '62 dias', tar: 'US$ 120', c: 'boxwarn' },
+    { l: 'D', canc: 23.9, ant: '99 dias', tar: 'US$ 79', c: 'box' },
+    { l: 'E', canc: 15.1, ant: '10 dias', tar: 'US$ 89', c: 'boxok' },
+  ];
+  let b = G(640, 70, R(0, 0), T(0, 0, 'O que caracteriza cada grupo', 'th2', 'middle'));
+  seg.forEach((s, i) => {
+    const x = 140 + i * 210;
+    const h = 20 + s.canc * 2.6;
+    const s3 = (i === 0) ? 1 : (i === 4 ? 2 : null);
+    b += G(x, 620, R(0, .1 + i * .08, null, 'gr'), BOX(-70, -h, 140, h, s.c, 8));
+    b += G(x, 640, R(0, .1 + i * .08, null, 'fd'), T(0, 0, s.l, 'th2', 'middle'));
+    b += G(x, 600 - h, R(0, .1 + i * .08, null, 'fd'), T(0, -10, s.canc + '%', 'tb', 'middle'));
+  });
+  b += G(140, 250, R(1, 0, null, 'pop'), BOX(-110, -46, 220, 92, 'boxbad') + T(0, -6, 'Grupo A', 'tb', 'middle') + T(0, 22, '186 dias de antecedência', 'sm', 'middle'));
+  b += G(1140, 250, R(2, 0, null, 'pop'), BOX(-110, -46, 220, 92, 'boxok') + T(0, -6, 'Grupo E', 'tb', 'middle') + T(0, 22, '10 dias de antecedência', 'sm', 'middle'));
+  b += G(640, 250, R(3, 0, null, 'pop'), BOX(-220, -46, 440, 92, 'boxp') + T(0, -6, '6,6x de diferença', 'th2', 'middle') + T(0, 24, 'no cancelamento, A vs. E', 'sm', 'middle'));
+  b += G(640, 370, R(4, 0, null, 'fd'), T(0, 0, 'antecedência · tarifa · taxa de cancelamento separam os grupos', 'sm', 'middle'));
+  return SVG(b);
+};
+
+// 4. Os padrões por trás da segmentação
+CENA['padroes'] = () => {
+  let b = G(640, 80, R(0, 0), T(0, 0, 'Os padrões por trás da segmentação', 'th2', 'middle'));
+  b += G(640, 190, R(0, .2), T(0, 0, 'combinações que aparecem juntas mais do que o acaso explicaria', 'sm', 'middle'));
+  b += G(640, 300, R(1, 0, null, 'pop'), BOX(-220, -50, 440, 100, 'boxp') + T(0, -8, '523', 'th', 'middle') + T(0, 30, 'regras de associação confiáveis', 'sm', 'middle'));
+  b += G(260, 480, R(2, 0, null, 'pop'), BOX(-220, -56, 440, 112, 'boxbad') + T(0, -16, 'country = PRT + canal', 'tb', 'middle') + T(0, 14, 'lift ~1,8', 'sm', 'middle') + T(0, 38, 'mais cancelamento', 'sm', 'middle'));
+  b += G(1020, 480, R(3, 0, null, 'pop'), BOX(-220, -56, 440, 112, 'boxok') + T(0, -16, 'última hora', 'tb', 'middle') + T(0, 14, 'lift ~1,3', 'sm', 'middle') + T(0, 38, 'quase não cancela', 'sm', 'middle'));
+  b += G(640, 630, R(4, 0, null, 'fd'), T(0, 0, 'caminho independente confirma a mesma divisão dos grupos', 'sm', 'middle'));
+  return SVG(b);
+};
+
+// 5. O que fazer com cada grupo
+CENA['acao-por-grupo'] = () => {
+  const linhas = [
+    ['A', 'maior risco', 'confirmação antecipada ou depósito', 'boxbad'],
+    ['E', 'última hora', 'confirmação automática, sem reserva extra', 'boxok'],
+    ['B · C · D', 'risco intermediário', 'política proporcional a risco e tarifa', 'boxwarn'],
+  ];
+  let b = G(640, 70, R(0, 0), T(0, 0, 'O que fazer com cada grupo', 'th2', 'middle'));
+  linhas.forEach((l, i) => {
+    const s = i === 2 ? 2 : i;
+    const y = 190 + i * 130;
+    b += G(640, y, R(s, i === 2 ? .2 : 0, null, 'pop'),
+      BOX(-480, -48, 960, 96, l[3]) + T(-440, -10, l[0], 'th2', 'start') + T(-440, 24, l[1], 'sm', 'start') + T(-30, 8, l[2], 't', 'start'));
+  });
+  b += G(640, 590, R(3, 0, null, 'pop'), BOX(-300, -46, 600, 92, 'boxp') + T(0, -6, '99,7% de acerto', 'th2', 'middle') + T(0, 24, 'classificação automática de reserva nova', 'sm', 'middle'));
+  b += G(640, 680, R(4, 0, null, 'fd'), T(0, 0, 'a política vale desde o momento da reserva', 'sm', 'middle'));
+  return SVG(b);
+};
+
+// 6. Resultado e próximos passos
+CENA['resultado'] = () => {
+  let b = G(640, 70, R(0, 0), T(0, 0, 'Resultado e próximos passos', 'th2', 'middle'));
+  b += G(360, 230, R(0, .3, null, 'pop'), BOX(-260, -56, 520, 112, 'boxok') + T(0, -16, 'US$ 154.963', 'th2', 'middle') + T(0, 16, 'cenário base, 1º ano', 'sm', 'middle') + T(0, 38, '(premissa hipotética)', 'sm', 'middle'));
+  b += G(940, 230, R(1, 0, null, 'pop'), BOX(-260, -56, 520, 112, 'boxp') + T(0, -16, '5 de 6 critérios', 'th2', 'middle') + T(0, 16, 'técnicos atendidos', 'sm', 'middle'));
+  b += G(640, 420, R(2, 0, null, 'fd'), T(0, 0, 'o critério não atendido não compromete o uso real do modelo', 'sm', 'middle'));
+  b += G(640, 540, R(3, 0, null, 'pop'), BOX(-320, -50, 640, 100, 'boxok') + T(0, -8, 'Recomendação: implantar', 'th2', 'middle') + T(0, 28, 'acompanhamento mensal de cancelamento por grupo', 'sm', 'middle'));
+  b += G(640, 660, R(4, 0, 5, 'fd'), T(0, 0, 'perguntas e discussão com o conselho', 'sm', 'middle'));
+  b += G(640, 660, R(5, 0, null, 'fd'), T(0, 0, 'obrigado', 'th2', 'middle'));
+  return SVG(b);
+};
+
+/* ---------- capa ---------- */
+const CAPA = () => {
+  let b = `<rect x="0" y="470" width="1280" height="250" fill="url(#gridp)"/><line x1="0" x2="1280" y1="470" y2="470" stroke="var(--line)" stroke-width="2"/>`;
+  b += T(80, 120, 'PITCH EXECUTIVO, PBL CRISP-DM', 'sm', 'start', 'style="font:600 20px var(--mono);letter-spacing:.12em;fill:var(--pri)"');
+  b += T(80, 210, 'Segmentação de reservas hoteleiras', 'th', 'start', 'style="font-size:84px"');
+  b += T(80, 270, '5 segmentos de reserva, 1 ação por grupo,', 'th2', 'start', 'style="font-weight:600;fill:var(--mute)"');
+  b += T(80, 310, 'dentro do limite de 5 que o orçamento permite.', 'th2', 'start', 'style="font-weight:600;fill:var(--mute)"');
+  const min = Math.round(window.CAPITULOS.reduce((s, c) => s + c.dur, 0) / 60);
+  b += T(80, 390, `Apresentação narrada · ${window.CAPITULOS.length} capítulos · cerca de ${min} minutos`, 'sm');
+  b += `<g id="coverGo" role="button" aria-label="Começar a apresentação"><circle cx="1090" cy="250" r="92" class="pri"/><path d="M1068 205L1132 250L1068 295z" fill="var(--panel)"/>${T(1090, 380, 'Começar', 'tb', 'middle', 'class="tb prit"')}</g>`;
+  return SVG(b);
+};
+
+/* ---------- player ---------- */
+const CAPS = window.CAPITULOS, aud = document.getElementById('aud'), stage = document.getElementById('stage');
+// ids dos capítulos que ganham a marca azul na lateral (o assunto principal)
+const DESTAQUE = new Set([]);
+const RM = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+let ci = 0, els = [], wantPlay = false, raf = 0, capa = true;
+
+document.getElementById('list').innerHTML = `<button class="ch chcapa" data-i="-1"><i>··</i><span>Capa</span><small></small></button>` + CAPS.map((c, i) => `<button class="ch ${DESTAQUE.has(c.id) ? 'atlas' : ''}" data-i="${i}"><i>${String(i + 1).padStart(2, '0')}</i><span>${c.title}</span><small>${fmt(c.dur)}</small></button>`).join('');
+document.getElementById('mob').innerHTML = `<option value="-1">Capa</option>` + CAPS.map((c, i) => `<option value="${i}">${i + 1}. ${c.title}</option>`).join('');
+
+function showCapa() {
+  capa = true; aud.pause(); aud.removeAttribute('src'); aud.load(); els = [];
+  stage.innerHTML = CAPA();
+  document.getElementById('coverGo').onclick = () => load(0, true);
+  document.getElementById('title').textContent = 'Segmentação de reservas hoteleiras';
+  document.getElementById('kicker').textContent = 'capa';
+  document.getElementById('cap').textContent = 'Clique em Começar ou pressione espaço.';
+  document.getElementById('fill').style.width = '0%';
+  document.getElementById('time').textContent = '0:00 / ' + fmt(CAPS.reduce((s, c) => s + c.dur, 0));
+  document.querySelectorAll('.tk').forEach(t => t.remove());
+  document.querySelectorAll('.ch').forEach(b => b.classList.toggle('on', +b.dataset.i === -1));
+  document.getElementById('mob').value = -1;
+  try { history.replaceState(null, '', '#capa'); } catch (e) {}
+  document.getElementById('play').textContent = '▶ Começar';
+}
+function load(i, autoplay) {
+  if (i < 0) return showCapa();
+  capa = false;
+  ci = Math.min(CAPS.length - 1, i);
+  const c = CAPS[ci];
+  aud.src = c.audio;
+  stage.innerHTML = CENA[c.id]();
+  const fim = document.getElementById('endGo'); if (fim) fim.onclick = showCapa;
+  els = [...stage.querySelectorAll('[data-s]')].map(e => ({ e, s: +e.dataset.s, d: +e.dataset.d, u: e.dataset.u === undefined ? null : +e.dataset.u, ud: +(e.dataset.ud || 0) }));
+  document.getElementById('title').textContent = c.title;
+  document.getElementById('kicker').textContent = `${ci + 1}/${CAPS.length}${DESTAQUE.has(c.id) ? ' · destaque' : ''}`;
+  document.querySelectorAll('.ch').forEach(b => b.classList.toggle('on', +b.dataset.i === ci));
+  document.getElementById('mob').value = ci;
+  const bar = document.getElementById('bar');
+  bar.querySelectorAll('.tk').forEach(t => t.remove());
+  c.segs.forEach((s, k) => { if (k) { const t = document.createElement('div'); t.className = 'tk'; t.style.left = (s.t / c.dur * 100) + '%'; bar.appendChild(t); } });
+  try { history.replaceState(null, '', '#' + c.id); } catch (e) {}
+  wantPlay = !!autoplay;
+  if (wantPlay) aud.play().catch(() => { wantPlay = false; ui(); });
+  render(0);
+  ui();
+}
+function segAt(t) { const s = CAPS[ci].segs; let k = 0; for (let i = 0; i < s.length; i++) if (t >= s[i].t) k = i; return k; }
+function render(tOverride) {
+  if (capa) return;
+  const c = CAPS[ci], t = tOverride ?? aud.currentTime, S = c.segs;
+  for (const o of els) {
+    const start = S[o.s].t + o.d, end = o.u === null ? Infinity : S[o.u].t + o.ud;
+    o.e.classList.toggle('on', t >= start && t < end);
+  }
+  document.getElementById('cap').textContent = S[segAt(t)].cap;
+  document.getElementById('fill').style.width = Math.min(100, t / c.dur * 100) + '%';
+  document.getElementById('time').textContent = `${fmt(t)} / ${fmt(c.dur)}`;
+}
+function loop() { render(); raf = requestAnimationFrame(loop); }
+function ui() { document.getElementById('play').textContent = capa ? '▶ Começar' : aud.paused ? '▶ Ouvir' : '❚❚ Pausar'; }
+function toggle() { if (capa) return load(0, true); aud.paused ? aud.play() : aud.pause(); }
+function seek(t) { aud.currentTime = Math.max(0, Math.min(CAPS[ci].dur - .05, t)); render(aud.currentTime); }
+function stepScene(dir) {
+  if (capa) { if (dir > 0) load(0, false); return; }
+  const S = CAPS[ci].segs, k = segAt(aud.currentTime + .05);
+  if (dir > 0) {
+    if (k + 1 < S.length) seek(S[k + 1].t + .01);
+    // na última cena, pula para o fim (mostra todos os atrasos) ou para o próximo capítulo
+    else if (aud.currentTime < CAPS[ci].dur - .2) seek(CAPS[ci].dur - .06);
+    else load(ci + 1, !aud.paused);
+  } else {
+    const back = aud.currentTime - S[k].t > 1.5 ? k : k - 1;
+    if (back >= 0) seek(S[back].t + .01); else if (ci > 0) { load(ci - 1, false); seek(CAPS[ci].dur - .06); } else showCapa();
+  }
+}
+aud.addEventListener('play', () => { cancelAnimationFrame(raf); loop(); ui(); });
+aud.addEventListener('pause', () => { cancelAnimationFrame(raf); render(); ui(); });
+aud.addEventListener('ended', () => { if (ci < CAPS.length - 1) load(ci + 1, true); else ui(); });
+document.getElementById('play').onclick = toggle;
+document.getElementById('step').onclick = () => stepScene(1);
+document.getElementById('prev').onclick = () => capa ? null : load(ci - 1, !aud.paused);
+document.getElementById('next').onclick = () => capa ? load(0, false) : load(ci + 1, !aud.paused);
+document.getElementById('redo').onclick = () => { if (capa) return load(0, true); seek(0); aud.play(); };
+function telaCheia() {
+  const m = document.querySelector('main');
+  if (document.fullscreenElement) return document.exitFullscreen();
+  if (document.body.classList.contains('foco')) return document.body.classList.remove('foco');
+  // alguns visualizadores bloqueiam a tela cheia; nesse caso, esconde a lateral (modo foco)
+  const p = m.requestFullscreen ? m.requestFullscreen() : Promise.reject();
+  p.catch(() => document.body.classList.add('foco'));
+}
+document.getElementById('full').onclick = telaCheia;
+document.getElementById('list').onclick = e => { const b = e.target.closest('.ch'); if (b) load(+b.dataset.i, !aud.paused); };
+document.getElementById('mob').onchange = e => load(+e.target.value, false);
+const bar = document.getElementById('bar');
+bar.onclick = e => { const r = bar.getBoundingClientRect(); seek((e.clientX - r.left) / r.width * CAPS[ci].dur); };
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  if (e.key === ' ') { e.preventDefault(); toggle(); }
+  else if (e.key === 'f' || e.key === 'F') telaCheia();
+  else if (e.key === 'ArrowRight') { e.preventDefault(); stepScene(1); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); stepScene(-1); }
+  else if (e.key === 'PageDown') capa ? load(0, false) : load(ci + 1, !aud.paused);
+  else if (e.key === 'PageUp') capa ? null : load(ci - 1, !aud.paused);
+});
+const root = document.documentElement;
+try { const th = localStorage.getItem('apres-tema'); if (th) root.dataset.theme = th; } catch (e) {}
+document.getElementById('theme').onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('apres-tema', root.dataset.theme); } catch (e) {}
+};
+const start = CAPS.findIndex(c => '#' + c.id === location.hash);
+start >= 0 ? load(start, false) : showCapa();
+</script>
+</body>
+</html>
